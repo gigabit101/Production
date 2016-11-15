@@ -163,23 +163,11 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         return null;
     }
 
-//    @Override
-//    public ItemStack getStackInSlotOnClosing(int id) {
-//        if (slots.get(id).shouldDropOnClosing()) {
-//            ItemStack item = getStackInSlot(id);
-//            setInventorySlotContents(id, null);
-//            return item;
-//        }else{
-//            return null;
-//        }
-//    }
-
     @Override
     public void setInventorySlotContents(int id, ItemStack item)
     {
         items[id] = item;
     }
-
 
     @Override
     public int getInventoryStackLimit()
@@ -195,15 +183,10 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     @Override
-    public void openInventory(EntityPlayer player)
-    {
-    }
+    public void openInventory(EntityPlayer player) {}
 
     @Override
-    public void closeInventory(EntityPlayer player)
-    {
-    }
-
+    public void closeInventory(EntityPlayer player) {}
 
     public void addSlot(SlotBase slot)
     {
@@ -218,7 +201,8 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         {
             players.add(player);
             sendAllDataToPlayer(player);
-        } else
+        }
+        else
         {
             System.err.println("Trying to add a listening player: " + player.toString());
         }
@@ -288,7 +272,6 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         DataWriter dw = PacketHandler.getWriter(this, PacketId.TYPE);
         dw.writeEnum(dataType);
         dataType.save(this, dw, id);
-
         return dw;
     }
 
@@ -401,6 +384,7 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         }
     }
 
+    //TODO 
 //    private void transfer(Setting setting, Side side, Transfer transfer, int transferSize) {
 //        if (transfer.isEnabled() && transfer.isAuto()) {
 //            EnumFacing direction = EnumFacing.values()[BlockTable.getSideFromSideAndMetaReversed(side.getDirection().ordinal(), getBlockMetadata())];

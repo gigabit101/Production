@@ -25,7 +25,6 @@ public class StevesProduction
     @Mod.Instance("StevesWorkshop")
     public static StevesProduction instance;
 
-
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {

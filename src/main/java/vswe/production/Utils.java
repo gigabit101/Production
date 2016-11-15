@@ -22,7 +22,6 @@ public class Utils
     {
         DataInputStream datainputstream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(bytes))));
         NBTTagCompound nbttagcompound;
-
         try
         {
             nbttagcompound = CompressedStreamTools.read(datainputstream, sizeTracker);
@@ -30,7 +29,6 @@ public class Utils
         {
             datainputstream.close();
         }
-
         return nbttagcompound;
     }
 
@@ -38,7 +36,6 @@ public class Utils
     {
         ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
         DataOutputStream dataoutputstream = new DataOutputStream(new GZIPOutputStream(bytearrayoutputstream));
-
         try
         {
             CompressedStreamTools.write(tagCompound, dataoutputstream);
@@ -46,7 +43,6 @@ public class Utils
         {
             dataoutputstream.close();
         }
-
         return bytearrayoutputstream.toByteArray();
     }
 }

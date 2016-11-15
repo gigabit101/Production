@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 public abstract class GuiBase extends GuiContainer
 {
     public GuiBase(Container container)
@@ -100,34 +99,6 @@ public abstract class GuiBase extends GuiContainer
         GL11.glEnable(GL11.GL_ALPHA_TEST);
     }
 
-    private static final ResourceLocation BLOCK_TEXTURE = new ResourceLocation("textures/atlas/blocks.png");
-
-
-//    public void drawBlockIcon(IIcon icon, int x, int y) {
-//        mc.getTextureManager().bindTexture(BLOCK_TEXTURE);
-//        drawIcon(icon, x, y);
-//    }
-//
-//    public void drawIcon(IIcon icon, int x, int y) {
-//        drawIcon(icon, x, y, 1F, 1F, 0F, 0F);
-//    }
-//
-//    public void drawIcon(IIcon icon, int targetX, int targetY, float sizeX, float sizeY, float offsetX, float offsetY) {
-//        Tessellator tessellator = Tessellator.instance;
-//        tessellator.startDrawingQuads();
-//
-//        float x = icon.getMinU() + offsetX * (icon.getMaxU() - icon.getMinU());
-//        float y = icon.getMinV() + offsetY * (icon.getMaxV() - icon.getMinV());
-//        float width = (icon.getMaxU() - icon.getMinU()) * sizeX;
-//        float height = (icon.getMaxV() - icon.getMinV()) * sizeY;
-//
-//        tessellator.addVertexWithUV(targetX, 			    targetY + 16 * sizeY, 	this.zLevel, 	x, 			    y + height);
-//        tessellator.addVertexWithUV(targetX + 16 * sizeX, 	targetY + 16 * sizeY, 	this.zLevel, 	x + width, 		y + height);
-//        tessellator.addVertexWithUV(targetX + 16 * sizeX, 	targetY, 			    this.zLevel, 	x + width, 		y);
-//        tessellator.addVertexWithUV(targetX, 			    targetY, 			    this.zLevel, 	x, 			    y);
-//        tessellator.draw();
-//    }
-
     private static final int ITEM_SIZE = 18;
     private static final int ITEM_SRC_X = 68;
     private static final int ITEM_SRC_Y = 62;
@@ -200,7 +171,6 @@ public abstract class GuiBase extends GuiContainer
         {
             return;
         }
-
 
         int w = 0;
 
