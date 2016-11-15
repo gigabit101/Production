@@ -1,7 +1,8 @@
 package vswe.production.page.setting;
 
 
-public enum Direction {
+public enum Direction
+{
     BOTTOM(1, 2),
     TOP(1, 0),
     FRONT(1, 1),
@@ -14,11 +15,13 @@ public enum Direction {
     private String name;
     private String description;
 
-    Direction(int interfaceX, int interfaceY) {
+    Direction(int interfaceX, int interfaceY)
+    {
         this(interfaceX, interfaceY, null);
     }
 
-    Direction(int interfaceX, int interfaceY, String description) {
+    Direction(int interfaceX, int interfaceY, String description)
+    {
         this.interfaceX = interfaceX;
         this.interfaceY = interfaceY;
 
@@ -26,19 +29,23 @@ public enum Direction {
         this.description = description;
     }
 
-    public int getInterfaceX() {
+    public int getInterfaceX()
+    {
         return interfaceX;
     }
 
-    public int getInterfaceY() {
+    public int getInterfaceY()
+    {
         return interfaceY;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public String getDescription() {
+    public String getDescription()
+    {
         return description;
     }
 }

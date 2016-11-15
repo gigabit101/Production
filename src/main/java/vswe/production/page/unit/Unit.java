@@ -6,7 +6,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import vswe.production.StevesProduction;
 import vswe.production.gui.GuiBase;
 import vswe.production.gui.container.slot.SlotBase;
 import vswe.production.item.Upgrade;
@@ -18,7 +17,8 @@ import vswe.production.tileentity.TileEntityTable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Unit {
+public abstract class Unit
+{
     protected TileEntityTable table;
     protected Page page;
     protected int id;
@@ -26,7 +26,8 @@ public abstract class Unit {
     protected int y;
 
 
-    public Unit(TileEntityTable table, Page page, int id, int x, int y) {
+    public Unit(TileEntityTable table, Page page, int id, int x, int y)
+    {
         this.table = table;
         this.page = page;
         this.id = id;
@@ -41,32 +42,37 @@ public abstract class Unit {
     private static final int PROGRESS_OFFSET = -1;
 
     @SideOnly(Side.CLIENT)
-    public void draw(GuiBase gui, int mX, int mY) {
+    public void draw(GuiBase gui, int mX, int mY)
+    {
         gui.prepare();
         int x = getArrowX();
         int y = getArrowY();
         gui.drawRect(this.x + x, this.y + y, ARROW_SRC_X, ARROW_SRC_Y, ARROW_WIDTH, ARROW_HEIGHT);
         int max = getMaxCharges();
         boolean charging = false;
-        if (max > 0 && chargeCount > 0) {
+        if (max > 0 && chargeCount > 0)
+        {
             charging = true;
             GL11.glColor4f(0.11F, 0.35F, 0.17F, 1);
             int count = Math.min(chargeCount, max);
             gui.drawRect(this.x + x, this.y + y, ARROW_SRC_X, ARROW_SRC_Y + ARROW_HEIGHT, count * ARROW_WIDTH / max, ARROW_HEIGHT);
         }
 
-        if (isCharging()) {
+        if (isCharging())
+        {
             charging = true;
             GL11.glColor4f(0.25F, 0.8F, 0.38F, 0.5F);
             GL11.glEnable(GL11.GL_BLEND);
-        }else{
+        } else
+        {
             GL11.glColor4f(1, 1, 1, 1);
         }
         int progress = Math.min(productionProgress, PRODUCTION_TIME);
         gui.drawRect(this.x + x, this.y + y + PROGRESS_OFFSET, ARROW_SRC_X, ARROW_SRC_Y + ARROW_HEIGHT, progress * ARROW_WIDTH / PRODUCTION_TIME, ARROW_HEIGHT);
         GL11.glDisable(GL11.GL_BLEND);
 
-        if (charging) {
+        if (charging)
+        {
             List<String> str = new ArrayList<String>();
             str.add(TextFormatting.GREEN + (chargeCount < max ? "Charging" : "Fully Charged"));
             str.add("Charges: " + chargeCount + "/" + max);
@@ -79,14 +85,17 @@ public abstract class Unit {
 
 
     protected abstract int getArrowX();
+
     protected abstract int getArrowY();
 
-    protected void addSlot(SlotBase slot) {
+    protected void addSlot(SlotBase slot)
+    {
         table.addSlot(slot);
         slots.add(slot);
     }
 
-    public int getId() {
+    public int getId()
+    {
         return id;
     }
 
@@ -97,109 +106,138 @@ public abstract class Unit {
     private int chargeCount;
     public static final int CHARGES_PER_LEVEL = 4;
 
-    protected boolean canCharge() {
+    protected boolean canCharge()
+    {
         return chargeCount < getMaxCharges();
     }
 
-    private int getMaxCharges() {
+    private int getMaxCharges()
+    {
         return table.getUpgradePage().getUpgradeCount(id, Upgrade.CHARGED) * CHARGES_PER_LEVEL;
     }
 
-    private boolean isCharging() {
-        if (canCharge()) {
+    private boolean isCharging()
+    {
+        if (canCharge())
+        {
             ItemStack result = getProductionResult();
-            if (result == null) {
+            if (result == null)
+            {
                 return true;
-            }else{
+            } else
+            {
                 ItemStack output = table.getStackInSlot(getOutputId());
                 return !canMove(result, output);
             }
-        }else{
+        } else
+        {
             return false;
         }
     }
 
-    private int getProductionSpeed(boolean charging) {
+    private int getProductionSpeed(boolean charging)
+    {
         int base = 1 + table.getUpgradePage().getUpgradeCount(id, Upgrade.SPEED);
 
         return charging ? base : base * 4;
     }
 
-    private int getPowerConsumption(boolean charging) {
+    private int getPowerConsumption(boolean charging)
+    {
         int base = 1 + table.getUpgradePage().getUpgradeCount(id, Upgrade.SPEED) * 2;
 
         return charging ? base * 2 : base;
     }
 
-    private void produce(ItemStack result, ItemStack output) {
-        if (output == null) {
+    private void produce(ItemStack result, ItemStack output)
+    {
+        if (output == null)
+        {
             table.setInventorySlotContents(getOutputId(), result.copy());
-        }else{
+        } else
+        {
             table.getStackInSlot(getOutputId()).stackSize += result.stackSize;
         }
 
         onProduction(result);
     }
 
-    public void onUpdate() {
-        if (!table.getWorld().isRemote) {
+    public void onUpdate()
+    {
+        if (!table.getWorld().isRemote)
+        {
             boolean canCharge = false;
             boolean updatedProgress = false;
             boolean canReset = false;
             ItemStack result = getProductionResult();
-            if (result != null) {
+            if (result != null)
+            {
                 boolean updatedCharge = false;
                 boolean done;
-                do {
+                do
+                {
                     done = true;
                     ItemStack output = table.getStackInSlot(getOutputId());
-                    if (canMove(result, output)) {
-                        if (chargeCount > 0 && getMaxCharges() > 0) {
+                    if (canMove(result, output))
+                    {
+                        if (chargeCount > 0 && getMaxCharges() > 0)
+                        {
                             chargeCount--;
                             done = false;
                             updatedCharge = true;
                             produce(result, output);
                             result = getProductionResult();
-                        }else {
+                        } else
+                        {
                             int powerConsumption = getPowerConsumption(false);
 
-                            if (table.getPower() >= powerConsumption) {
+                            if (table.getPower() >= powerConsumption)
+                            {
                                 table.setPower(table.getPower() - powerConsumption);
                                 productionProgress += getProductionSpeed(false);
-                                while (productionProgress >= PRODUCTION_TIME) {
+                                while (productionProgress >= PRODUCTION_TIME)
+                                {
                                     productionProgress -= PRODUCTION_TIME;
                                     produce(result, output);
                                     result = getProductionResult();
                                     output = table.getStackInSlot(getOutputId());
-                                    if (!canMove(result, output)) {
+                                    if (!canMove(result, output))
+                                    {
                                         break;
                                     }
                                 }
                                 updatedProgress = true;
                             }
                         }
-                    }else{
+                    } else
+                    {
                         canCharge = true;
                     }
-                }while (!done);
+                } while (!done);
 
-                if (updatedCharge) {
+                if (updatedCharge)
+                {
                     table.sendDataToAllPlayer(DataType.CHARGED, DataUnit.getId(this));
                 }
-            }else{
+            } else
+            {
                 canCharge = true;
                 canReset = true;
             }
 
-            if (canCharge && canCharge()) {
+            if (canCharge && canCharge())
+            {
                 boolean done = false;
-                while (canCharge() && !done) {
+                while (canCharge() && !done)
+                {
                     done = true;
                     int powerConsumption = getPowerConsumption(true);
-                    if (table.getPower() >= powerConsumption) {
+                    if (table.getPower() >= powerConsumption)
+                    {
                         table.setPower(table.getPower() - powerConsumption);
                         productionProgress += getProductionSpeed(true);
-                        if (productionProgress >= PRODUCTION_TIME) {
+                        if (productionProgress >= PRODUCTION_TIME)
+                        {
                             productionProgress -= PRODUCTION_TIME;
 
                             chargeCount++;
@@ -209,41 +247,54 @@ public abstract class Unit {
                         updatedProgress = true;
                     }
                 }
-            }else if (canReset && productionProgress != 0){
+            } else if (canReset && productionProgress != 0)
+            {
                 productionProgress = 0;
                 updatedProgress = true;
             }
 
-            if (updatedProgress) {
+            if (updatedProgress)
+            {
                 workingTicks = WORKING_COOLDOWN;
                 table.sendDataToAllPlayer(DataType.PROGRESS, DataUnit.getId(this));
-            }else if(workingTicks > 0) {
+            } else if (workingTicks > 0)
+            {
                 workingTicks--;
             }
-        }else if(workingTicks > 0) {
+        } else if (workingTicks > 0)
+        {
             workingTicks--;
         }
     }
 
-    public int getChargeCount() {
+    public int getChargeCount()
+    {
         return chargeCount;
     }
 
-    public void setChargeCount(int chargeCount) {
+    public void setChargeCount(int chargeCount)
+    {
         this.chargeCount = chargeCount;
     }
 
     protected abstract ItemStack getProductionResult();
+
     protected abstract int getOutputId();
+
     protected abstract void onProduction(ItemStack result);
 
-    protected boolean canMove(ItemStack source, ItemStack target) {
-        if (source != null) {
-            if (target == null) {
+    protected boolean canMove(ItemStack source, ItemStack target)
+    {
+        if (source != null)
+        {
+            if (target == null)
+            {
                 return true;
-            }else if(target.isItemEqual(source) && ItemStack.areItemStackTagsEqual(target, source)){
+            } else if (target.isItemEqual(source) && ItemStack.areItemStackTagsEqual(target, source))
+            {
                 int resultSize = target.stackSize + source.stackSize;
-                if (resultSize <= table.getInventoryStackLimit() && resultSize <= target.getMaxStackSize()) {
+                if (resultSize <= table.getInventoryStackLimit() && resultSize <= target.getMaxStackSize())
+                {
                     return true;
                 }
             }
@@ -253,41 +304,48 @@ public abstract class Unit {
     }
 
 
-    public int getProductionProgress() {
+    public int getProductionProgress()
+    {
         return productionProgress;
     }
 
-    public void setProductionProgress(int productionProgress) {
+    public void setProductionProgress(int productionProgress)
+    {
         this.productionProgress = productionProgress;
         workingTicks = WORKING_COOLDOWN;
     }
-
-
 
 
     public abstract boolean isEnabled();
 
 
     private List<SlotBase> slots = new ArrayList<SlotBase>();
-    public List<SlotBase> getSlots() {
+
+    public List<SlotBase> getSlots()
+    {
         return slots;
     }
 
     private static final String NBT_CHARGED = "Charged";
     private static final String NBT_PROGRESS = "Progress";
-    public void writeToNBT(NBTTagCompound compound) {
-        compound.setByte(NBT_CHARGED, (byte)chargeCount);
-        compound.setShort(NBT_PROGRESS, (short)productionProgress);
+
+    public void writeToNBT(NBTTagCompound compound)
+    {
+        compound.setByte(NBT_CHARGED, (byte) chargeCount);
+        compound.setShort(NBT_PROGRESS, (short) productionProgress);
     }
 
-    public void readFromNBT(NBTTagCompound compound) {
+    public void readFromNBT(NBTTagCompound compound)
+    {
         chargeCount = compound.getByte(NBT_CHARGED);
         productionProgress = compound.getShort(NBT_PROGRESS);
     }
 
     private static final int WORKING_COOLDOWN = 20;
     private int workingTicks;
-    public boolean isWorking() {
+
+    public boolean isWorking()
+    {
         return workingTicks > 0;
     }
 

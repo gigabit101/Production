@@ -11,19 +11,23 @@ import vswe.production.tileentity.TileEntityTable;
 public class GuiHandler implements IGuiHandler
 {
     @Override
-    public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
+    {
         TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
-        if (te instanceof TileEntityTable) {
-            return new ContainerTable((TileEntityTable)te, player);
+        if (te instanceof TileEntityTable)
+        {
+            return new ContainerTable((TileEntityTable) te, player);
         }
         return null;
     }
 
     @Override
-    public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
+    {
         TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
-        if (te instanceof TileEntityTable) {
-            return new GuiTable((TileEntityTable)te, player);
+        if (te instanceof TileEntityTable)
+        {
+            return new GuiTable((TileEntityTable) te, player);
         }
         return null;
     }

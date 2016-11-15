@@ -9,30 +9,39 @@ import vswe.production.creativetab.CreativeTabProduction;
 
 import java.util.List;
 
-public class ItemUpgrade extends Item {
-    public ItemUpgrade() {
+public class ItemUpgrade extends Item
+{
+    public ItemUpgrade()
+    {
         setCreativeTab(CreativeTabProduction.getTab());
         setHasSubtypes(true);
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack item) {
+    public String getUnlocalizedName(ItemStack item)
+    {
         Upgrade upgrade = getUpgrade(item);
         return "item." + (upgrade != null ? upgrade.getUnlocalizedName() : "unknown");
     }
 
-    public Upgrade getUpgrade(int dmg) {
-        if (dmg >= 0 && dmg < Upgrade.values().length) {
+    public Upgrade getUpgrade(int dmg)
+    {
+        if (dmg >= 0 && dmg < Upgrade.values().length)
+        {
             return Upgrade.values()[dmg];
-        }else{
+        } else
+        {
             return null;
         }
     }
 
-    public Upgrade getUpgrade(ItemStack item) {
-        if (item != null && ModItems.upgrade.equals(item.getItem())) {
+    public Upgrade getUpgrade(ItemStack item)
+    {
+        if (item != null && ModItems.upgrade.equals(item.getItem()))
+        {
             return getUpgrade(item.getItemDamage());
-        }else{
+        } else
+        {
             return null;
         }
     }
@@ -54,9 +63,12 @@ public class ItemUpgrade extends Item {
 //    }
 
     @Override
-    public void getSubItems(Item item, CreativeTabs tab, List lst) {
-        for (Upgrade upgrade : Upgrade.values()) {
-            if (upgrade.isEnabled()) {
+    public void getSubItems(Item item, CreativeTabs tab, List lst)
+    {
+        for (Upgrade upgrade : Upgrade.values())
+        {
+            if (upgrade.isEnabled())
+            {
                 lst.add(upgrade.getItemStack());
             }
         }
@@ -64,11 +76,14 @@ public class ItemUpgrade extends Item {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addInformation(ItemStack item, EntityPlayer player, List lst, boolean useExtraInfo) {
+    public void addInformation(ItemStack item, EntityPlayer player, List lst, boolean useExtraInfo)
+    {
         Upgrade upgrade = getUpgrade(item);
-        if (upgrade != null) {
+        if (upgrade != null)
+        {
             upgrade.addInfo(lst);
-        }else{
+        } else
+        {
             lst.add(TextFormatting.RED + "This is not a valid item");
         }
     }

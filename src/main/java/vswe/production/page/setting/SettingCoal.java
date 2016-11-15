@@ -8,28 +8,33 @@ import vswe.production.tileentity.TileEntityTable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SettingCoal extends Setting {
+public class SettingCoal extends Setting
+{
     private ItemStack itemStack;
 
-    public SettingCoal(TileEntityTable table, int id, int x, int y) {
+    public SettingCoal(TileEntityTable table, int id, int x, int y)
+    {
         super(table, id, x, y);
         itemStack = new ItemStack(Items.COAL);
     }
 
     @Override
-    public ItemStack getItem() {
+    public ItemStack getItem()
+    {
         return itemStack;
     }
 
     @Override
-    public List<SlotBase> getSlots() {
+    public List<SlotBase> getSlots()
+    {
         List<SlotBase> slots = new ArrayList<SlotBase>();
         slots.add(table.getSlots().get(0));
         return slots;
     }
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return "Fuel";
     }
 }

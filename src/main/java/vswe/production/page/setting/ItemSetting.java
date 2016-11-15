@@ -3,7 +3,8 @@ package vswe.production.page.setting;
 
 import net.minecraft.item.ItemStack;
 
-public class ItemSetting {
+public class ItemSetting
+{
     public static final int ITEM_COUNT = 10;
 
     private int id;
@@ -11,27 +12,33 @@ public class ItemSetting {
     private TransferMode mode = TransferMode.PRECISE;
 
 
-    public ItemSetting(int id) {
+    public ItemSetting(int id)
+    {
         this.id = id;
     }
 
-    public ItemStack getItem() {
+    public ItemStack getItem()
+    {
         return item;
     }
 
-    public void setItem(ItemStack item) {
+    public void setItem(ItemStack item)
+    {
         this.item = item;
     }
 
-    public int getId() {
+    public int getId()
+    {
         return id;
     }
 
-    public TransferMode getMode() {
+    public TransferMode getMode()
+    {
         return mode;
     }
 
-    public void setMode(TransferMode mode) {
+    public void setMode(TransferMode mode)
+    {
         this.mode = mode;
     }
 }

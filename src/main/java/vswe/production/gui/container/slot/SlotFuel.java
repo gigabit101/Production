@@ -8,18 +8,22 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import vswe.production.page.Page;
 import vswe.production.tileentity.TileEntityTable;
 
-public class SlotFuel extends SlotTable {
-    public SlotFuel(TileEntityTable table, Page page, int id, int x, int y) {
+public class SlotFuel extends SlotTable
+{
+    public SlotFuel(TileEntityTable table, Page page, int id, int x, int y)
+    {
         super(table, page, id, x, y);
     }
 
     @Override
-    public boolean isItemValid(ItemStack itemstack) {
+    public boolean isItemValid(ItemStack itemstack)
+    {
         return super.isItemValid(itemstack) && TileEntityFurnace.isItemFuel(itemstack) && !FluidContainerRegistry.isFilledContainer(itemstack);
     }
 
     @Override
-    public boolean canShiftClickInto(ItemStack item) {
+    public boolean canShiftClickInto(ItemStack item)
+    {
         return !item.getItem().equals(Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
     }
 }

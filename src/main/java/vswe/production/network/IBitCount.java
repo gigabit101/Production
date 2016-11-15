@@ -1,6 +1,7 @@
 package vswe.production.network;
 
 
-public interface IBitCount {
+public interface IBitCount
+{
     int getBitCount();
 }

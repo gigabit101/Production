@@ -7,14 +7,16 @@ import vswe.production.tileentity.TileEntityTable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Setting {
+public abstract class Setting
+{
     private int x;
     private int y;
     protected int id;
     protected TileEntityTable table;
     private List<Side> sides;
 
-    public Setting(TileEntityTable table, int id, int x, int y) {
+    public Setting(TileEntityTable table, int id, int x, int y)
+    {
         this.table = table;
         this.id = id;
         this.x = x;
@@ -22,25 +24,30 @@ public abstract class Setting {
         sides = new ArrayList<Side>();
     }
 
-    public boolean isValid() {
+    public boolean isValid()
+    {
         return getItem() != null;
     }
 
     public abstract ItemStack getItem();
 
-    public int getX() {
+    public int getX()
+    {
         return x;
     }
 
-    public int getY() {
+    public int getY()
+    {
         return y;
     }
 
-    public List<Side> getSides() {
+    public List<Side> getSides()
+    {
         return sides;
     }
 
-    public int getId() {
+    public int getId()
+    {
         return id;
     }
 

@@ -4,13 +4,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import vswe.production.gui.GuiBase;
 
-public abstract class Button {
+public abstract class Button
+{
 
     private String text;
     private int x;
     private int y;
 
-    protected Button(String text, int x, int y) {
+    protected Button(String text, int x, int y)
+    {
         this.text = text;
         this.x = x;
         this.y = y;
@@ -23,8 +25,10 @@ public abstract class Button {
     private static final int TEXT_Y = 7;
 
     @SideOnly(Side.CLIENT)
-    public void draw(GuiBase gui, int mX, int mY) {
-        if (isVisible()) {
+    public void draw(GuiBase gui, int mX, int mY)
+    {
+        if (isVisible())
+        {
             gui.prepare();
             boolean hover = gui.inBounds(x, y, WIDTH, HEIGHT, mX, mY);
 
@@ -34,15 +38,18 @@ public abstract class Button {
     }
 
     @SideOnly(Side.CLIENT)
-    public void onClick(GuiBase gui, int mX, int mY) {
-        if (isVisible() && gui.inBounds(x, y, WIDTH, HEIGHT, mX, mY)) {
+    public void onClick(GuiBase gui, int mX, int mY)
+    {
+        if (isVisible() && gui.inBounds(x, y, WIDTH, HEIGHT, mX, mY))
+        {
             clicked();
         }
     }
 
     public abstract void clicked();
 
-    public boolean isVisible() {
+    public boolean isVisible()
+    {
         return true;
     }
 }

@@ -4,7 +4,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import vswe.production.gui.GuiBase;
 
-public abstract class CheckBox {
+public abstract class CheckBox
+{
 
     private static final int SIZE = 8;
     private static final int SRC_X = 26;
@@ -17,15 +18,18 @@ public abstract class CheckBox {
     private String text;
 
 
-    public CheckBox(String text, int x, int y) {
+    public CheckBox(String text, int x, int y)
+    {
         this.x = x;
         this.y = y;
         this.text = text;
     }
 
     @SideOnly(Side.CLIENT)
-    public void draw(GuiBase gui, int mX, int mY) {
-        if (isVisible()) {
+    public void draw(GuiBase gui, int mX, int mY)
+    {
+        if (isVisible())
+        {
             gui.prepare();
             boolean hover = gui.inBounds(x, y, SIZE, SIZE, mX, mY);
             boolean checked = getValue();
@@ -36,18 +40,25 @@ public abstract class CheckBox {
 
 
     @SideOnly(Side.CLIENT)
-    public void onClick(GuiBase gui, int mX, int mY) {
-        if (isVisible() && gui.inBounds(x, y, SIZE, SIZE, mX, mY)) {
+    public void onClick(GuiBase gui, int mX, int mY)
+    {
+        if (isVisible() && gui.inBounds(x, y, SIZE, SIZE, mX, mY))
+        {
             setValue(!getValue());
             onUpdate();
         }
     }
 
     public abstract void setValue(boolean value);
-    public abstract boolean getValue();
-    public void onUpdate() {}
 
-    public boolean isVisible() {
+    public abstract boolean getValue();
+
+    public void onUpdate()
+    {
+    }
+
+    public boolean isVisible()
+    {
         return true;
     }
 }

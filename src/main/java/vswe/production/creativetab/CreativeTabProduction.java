@@ -5,30 +5,37 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import vswe.production.StevesProduction;
 
-public class CreativeTabProduction extends CreativeTabs {
+public class CreativeTabProduction extends CreativeTabs
+{
     private Item item;
 
-    public CreativeTabProduction() {
+    public CreativeTabProduction()
+    {
         super("steves_production");
         tab = this;
     }
 
     @Override
-    public Item getTabIconItem() {
+    public Item getTabIconItem()
+    {
         return item;
     }
 
-    public void init(Block block) {
+    public void init(Block block)
+    {
         item = Item.getItemFromBlock(block);
     }
 
     private static CreativeTabProduction tab;
-    public static CreativeTabProduction getTab() {
+
+    public static CreativeTabProduction getTab()
+    {
         return tab;
     }
 
     @Override
-    public String getTranslatedTabLabel() {
+    public String getTranslatedTabLabel()
+    {
         return StevesProduction.NAME;
     }
 }

@@ -9,8 +9,9 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.EnumSet;
 import java.util.List;
 
-public enum Upgrade {
-    BLANK("Blank Upgrade", "Crafting component", new MaxCount(0), (ParentType)null),
+public enum Upgrade
+{
+    BLANK("Blank Upgrade", "Crafting component", new MaxCount(0), (ParentType) null),
     AUTO_CRAFTER("Auto Crafter", "Convert a crafting table into an auto crafting table", new MaxCount(1), ParentType.CRAFTING),
     STORAGE("Extra Storage", "Adds extra storage", new MaxCount(1), ParentType.CRAFTING),
     CHARGED("Charger", "Let idle components charge up for later", new ConfigurableMax(8)),
@@ -18,9 +19,9 @@ public enum Upgrade {
     QUEUE("Input Queue", "Adds an input queue", new MaxCount(3), ParentType.SMELTING),
     EFFICIENCY("Fuel Efficiency", "Improves the fuel efficiency of solid fuel types", new ConfigurableMax(4), ParentType.GLOBAL),
     LAVA("Lava Generator", "Allows lava to be used as fuel", new MaxCount(1), ParentType.GLOBAL),
-    SOLAR("Solar Generator", "Allows the table to be charged by solar power", new ConfigurableMax(1),  ParentType.GLOBAL),
+    SOLAR("Solar Generator", "Allows the table to be charged by solar power", new ConfigurableMax(1), ParentType.GLOBAL),
     AUTO_TRANSFER("Auto Transfer", "Enables auto transfer to and from the table", new MaxCount(1), ParentType.GLOBAL),
-    FILTER("Filter", "Enables transfer filters", new MaxCount(1),  ParentType.GLOBAL),
+    FILTER("Filter", "Enables transfer filters", new MaxCount(1), ParentType.GLOBAL),
     TRANSFER("Transfer Capacity", "Increases the automatic transfer capacity", new ConfigurableMax(6, 20), ParentType.GLOBAL);
 
     //PATTERN("Pattern Crafting", "Remembers old recipes", 4, ParentType.CRAFTING), //TODO
@@ -33,7 +34,8 @@ public enum Upgrade {
     private EnumSet<ParentType> validParents;
 
 
-    Upgrade(String name, String description, MaxCount maxCount, EnumSet<ParentType> validParents) {
+    Upgrade(String name, String description, MaxCount maxCount, EnumSet<ParentType> validParents)
+    {
         this.name = name;
         this.validParents = validParents;
         this.unlocalizedName = toString().toLowerCase();
@@ -42,24 +44,29 @@ public enum Upgrade {
         maxCount.init(this);
     }
 
-    Upgrade(String name, String description, MaxCount maxCount, ParentType type) {
+    Upgrade(String name, String description, MaxCount maxCount, ParentType type)
+    {
         this(name, description, maxCount, type == null ? EnumSet.noneOf(ParentType.class) : EnumSet.of(type));
     }
 
-    Upgrade(String name, String description, MaxCount maxCount) {
+    Upgrade(String name, String description, MaxCount maxCount)
+    {
         this(name, description, maxCount, EnumSet.of(ParentType.CRAFTING, ParentType.SMELTING));
     }
 
-    public String getUnlocalizedName() {
+    public String getUnlocalizedName()
+    {
         return unlocalizedName;
     }
 
 
-    public boolean isEnabled() {
+    public boolean isEnabled()
+    {
         return maxCount.getConfigurableMax() == 0 || maxCount.getMax() > 0;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
@@ -77,34 +84,45 @@ public enum Upgrade {
 //    }
 
 
-    public ItemStack getItemStack() {
+    public ItemStack getItemStack()
+    {
         return new ItemStack(ModItems.upgrade, 1, ordinal());
     }
 
-    public static ItemStack getInvalidItemStack() {
+    public static ItemStack getInvalidItemStack()
+    {
         return new ItemStack(ModItems.upgrade, 1, values().length);
     }
 
-    public void addInfo(List<String> info) {
+    public void addInfo(List<String> info)
+    {
         info.add(TextFormatting.GRAY + description);
-        if (GuiScreen.isShiftKeyDown()) {
-            if (getMaxCount() == 1) {
+        if (GuiScreen.isShiftKeyDown())
+        {
+            if (getMaxCount() == 1)
+            {
                 info.add(TextFormatting.YELLOW + "Doesn't stack well");
-            }else if (getMaxCount() > 1) {
+            } else if (getMaxCount() > 1)
+            {
                 info.add(TextFormatting.YELLOW + "Stacks well up to " + getMaxCount() + " items");
-            }else if(!isEnabled()) {
+            } else if (!isEnabled())
+            {
                 info.add(TextFormatting.DARK_RED + "This item is disabled");
             }
 
-            for (ParentType validParent : validParents) {
+            for (ParentType validParent : validParents)
+            {
                 info.add(TextFormatting.GOLD + validParent.description);
             }
         }
     }
 
-    public boolean isValid(ItemStack parent) {
-        for (ParentType validParent : validParents) {
-            if (validParent.isValidParent(parent)) {
+    public boolean isValid(ItemStack parent)
+    {
+        for (ParentType validParent : validParents)
+        {
+            if (validParent.isValidParent(parent))
+            {
                 return true;
             }
         }
@@ -112,90 +130,114 @@ public enum Upgrade {
         return false;
     }
 
-    public int getMaxCount() {
+    public int getMaxCount()
+    {
         return maxCount.getMax();
     }
 
-    public MaxCount getMaxCountObject() {
+    public MaxCount getMaxCountObject()
+    {
         return maxCount;
     }
 
-    public enum ParentType {
-        CRAFTING("Works with Crafting Tables") {
-            @Override
-            protected boolean isValidParent(ItemStack item) {
-                return item != null && Item.getItemFromBlock(Blocks.CRAFTING_TABLE).equals(item.getItem());
-            }
-        },
-        SMELTING("Works with Furnaces") {
-            @Override
-            protected boolean isValidParent(ItemStack item) {
-                return item != null && Item.getItemFromBlock(Blocks.FURNACE).equals(item.getItem());
-            }
-        },
-        GLOBAL("Upgrades the entire Production Table") {
-            @Override
-            protected boolean isValidParent(ItemStack item) {
-                return item == null;
-            }
-        };
+    public enum ParentType
+    {
+        CRAFTING("Works with Crafting Tables")
+                {
+                    @Override
+                    protected boolean isValidParent(ItemStack item)
+                    {
+                        return item != null && Item.getItemFromBlock(Blocks.CRAFTING_TABLE).equals(item.getItem());
+                    }
+                },
+        SMELTING("Works with Furnaces")
+                {
+                    @Override
+                    protected boolean isValidParent(ItemStack item)
+                    {
+                        return item != null && Item.getItemFromBlock(Blocks.FURNACE).equals(item.getItem());
+                    }
+                },
+        GLOBAL("Upgrades the entire Production Table")
+                {
+                    @Override
+                    protected boolean isValidParent(ItemStack item)
+                    {
+                        return item == null;
+                    }
+                };
 
         private String description;
 
-        ParentType(String description) {
+        ParentType(String description)
+        {
             this.description = description;
         }
 
         protected abstract boolean isValidParent(ItemStack item);
     }
 
-    public static class MaxCount {
+    public static class MaxCount
+    {
         private int max;
         private int defaultMax;
 
-        public MaxCount(int max) {
+        public MaxCount(int max)
+        {
             this.max = max;
             this.defaultMax = max;
         }
 
-        public int getMax() {
+        public int getMax()
+        {
             return max;
         }
 
-        public void setMax(int value) {
+        public void setMax(int value)
+        {
             this.max = value;
         }
 
-        public int getConfigurableMax() {
+        public int getConfigurableMax()
+        {
             return defaultMax;
         }
 
-        public void init(Upgrade upgrade) {
+        public void init(Upgrade upgrade)
+        {
 
         }
     }
 
-    private static class ConfigurableMax extends MaxCount {
+    private static class ConfigurableMax extends MaxCount
+    {
         private boolean isGlobal;
         private int configurableMax;
-        private ConfigurableMax(int max, int configurableMax) {
+
+        private ConfigurableMax(int max, int configurableMax)
+        {
             super(max);
             this.configurableMax = configurableMax;
         }
-        private ConfigurableMax(int max) {
+
+        private ConfigurableMax(int max)
+        {
             this(max, -1);
         }
 
         private static final int GLOBAL_MAX_COUNT = 8 * 64;
         private static final int MAX_COUNT = 7 * 64;
+
         @Override
-        public int getConfigurableMax() {
+        public int getConfigurableMax()
+        {
             return configurableMax != -1 ? configurableMax : isGlobal ? GLOBAL_MAX_COUNT : MAX_COUNT;
         }
 
         @Override
-        public void init(Upgrade upgrade) {
+        public void init(Upgrade upgrade)
+        {
             isGlobal = upgrade.validParents.contains(ParentType.GLOBAL);
         }
     }
- }
+}

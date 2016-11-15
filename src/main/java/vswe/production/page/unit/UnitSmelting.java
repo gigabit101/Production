@@ -12,10 +12,12 @@ import vswe.production.item.Upgrade;
 import vswe.production.page.Page;
 import vswe.production.tileentity.TileEntityTable;
 
-public class UnitSmelting extends Unit {
+public class UnitSmelting extends Unit
+{
 
 
-    public UnitSmelting(TileEntityTable table, Page page, int id, int x, int y) {
+    public UnitSmelting(TileEntityTable table, Page page, int id, int x, int y)
+    {
         super(table, page, id, x, y);
     }
 
@@ -32,14 +34,16 @@ public class UnitSmelting extends Unit {
     private static final int SLOT_SIZE = 18;
 
     @Override
-    public int createSlots(int id) {
+    public int createSlots(int id)
+    {
         inputId = id;
         addSlot(new SlotUnitFurnaceInput(table, page, id++, this.x + START_X, this.y + START_Y, this));
         outputId = id;
         addSlot(new SlotUnitFurnaceResult(table, page, id++, this.x + START_X + RESULT_X, this.y + START_Y, this));
 
         queueId = id;
-        for (int i = 0; i < QUEUE_MAX_COUNT; i++) {
+        for (int i = 0; i < QUEUE_MAX_COUNT; i++)
+        {
             addSlot(new SlotUnitFurnaceQueue(table, page, id++, this.x + QUEUE_X, this.y + QUEUE_Y + i * SLOT_SIZE, this, QUEUE_ORDER[i]));
         }
 
@@ -50,34 +54,44 @@ public class UnitSmelting extends Unit {
     private static final int[] QUEUE_ORDER_START = {1, 1, 0};
 
     @Override
-    public void onUpdate() {
+    public void onUpdate()
+    {
         super.onUpdate();
 
         int queueLength = table.getUpgradePage().getUpgradeCount(id, Upgrade.QUEUE);
-        if (queueLength > 0) {
+        if (queueLength > 0)
+        {
             int start = QUEUE_ORDER_START[queueLength - 1];
-            for (int i = start + queueLength - 1; i >= start; i--) {
+            for (int i = start + queueLength - 1; i >= start; i--)
+            {
                 int targetId;
-                if (i == start + queueLength - 1) {
+                if (i == start + queueLength - 1)
+                {
                     targetId = inputId;
-                }else{
+                } else
+                {
                     targetId = queueId + i + 1;
                 }
                 int sourceId = queueId + i;
 
                 ItemStack target = table.getStackInSlot(targetId);
                 ItemStack source = table.getStackInSlot(sourceId);
-                if (source != null) {
+                if (source != null)
+                {
                     ItemStack move = source.copy();
                     move.stackSize = 1;
-                    if (canMove(move, target)) {
-                        if (target == null) {
+                    if (canMove(move, target))
+                    {
+                        if (target == null)
+                        {
                             table.setInventorySlotContents(targetId, move);
-                        }else{
+                        } else
+                        {
                             target.stackSize++;
                         }
                         source.stackSize--;
-                        if (source.stackSize == 0) {
+                        if (source.stackSize == 0)
+                        {
                             table.setInventorySlotContents(sourceId, null);
                         }
                     }
@@ -88,23 +102,27 @@ public class UnitSmelting extends Unit {
 
 
     @Override
-    protected ItemStack getProductionResult() {
+    protected ItemStack getProductionResult()
+    {
         ItemStack input = table.getStackInSlot(inputId);
         return input == null ? null : FurnaceRecipes.instance().getSmeltingResult(input);
     }
 
     @Override
-    protected void onProduction(ItemStack result) {
+    protected void onProduction(ItemStack result)
+    {
         table.decrStackSize(inputId, 1);
     }
 
     @Override
-    public int getOutputId() {
+    public int getOutputId()
+    {
         return outputId;
     }
 
     @Override
-    public boolean isEnabled() {
+    public boolean isEnabled()
+    {
         ItemStack item = table.getUpgradePage().getUpgradeMainItem(id);
 
         return item != null && Item.getItemFromBlock(Blocks.FURNACE) == item.getItem();
@@ -115,12 +133,14 @@ public class UnitSmelting extends Unit {
     private static final int ARROW_Y = 1;
 
     @Override
-    public int getArrowX() {
+    public int getArrowX()
+    {
         return START_X + ARROW_X;
     }
 
     @Override
-    public int getArrowY() {
+    public int getArrowY()
+    {
         return START_Y + ARROW_Y;
     }
 }

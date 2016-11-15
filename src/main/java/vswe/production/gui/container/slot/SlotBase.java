@@ -11,14 +11,16 @@ import vswe.production.page.setting.Transfer;
 import vswe.production.tileentity.TileEntityTable;
 
 
-public class SlotBase extends Slot {
+public class SlotBase extends Slot
+{
     private int x;
     private int y;
     private Transfer[] input = new Transfer[6];
     private Transfer[] output = new Transfer[6];
     protected TileEntityTable table;
 
-    public SlotBase(IInventory inventory, TileEntityTable table, int id, int x, int y) {
+    public SlotBase(IInventory inventory, TileEntityTable table, int id, int x, int y)
+    {
         super(inventory, id, x, y);
 
         this.x = x;
@@ -26,117 +28,145 @@ public class SlotBase extends Slot {
         this.table = table;
     }
 
-    public void updateClient(boolean visible) {
-        if (visible && isEnabled()) {
+    public void updateClient(boolean visible)
+    {
+        if (visible && isEnabled())
+        {
             xDisplayPosition = getX();
             yDisplayPosition = getY();
-        }else{
+        } else
+        {
             xDisplayPosition = -9000;
             yDisplayPosition = -9000;
         }
     }
 
-    public void updateServer() {
-        if (!isEnabled() && getHasStack()) {
+    public void updateServer()
+    {
+        if (!isEnabled() && getHasStack())
+        {
             table.spitOutItem(getStack());
             putStack(null);
         }
     }
 
     @Override
-    public boolean isItemValid(ItemStack itemstack) {
+    public boolean isItemValid(ItemStack itemstack)
+    {
         return isEnabled();
     }
 
-    public boolean isVisible() {
+    public boolean isVisible()
+    {
         return table.getMenu() == null;
     }
 
-    public boolean isEnabled() {
+    public boolean isEnabled()
+    {
         return true;
     }
 
-    public int getX() {
+    public int getX()
+    {
         return x;
     }
 
-    public int getY() {
+    public int getY()
+    {
         return y;
     }
 
-    public int getTextureIndex(GuiBase gui) {
+    public int getTextureIndex(GuiBase gui)
+    {
         return isEnabled() ? 0 : 1;
     }
 
-    public boolean isBig() {
+    public boolean isBig()
+    {
         return false;
     }
 
-    public boolean isOutputValid(int id, ItemStack item) {
+    public boolean isOutputValid(int id, ItemStack item)
+    {
         return output[id] != null && output[id].isValid(table, item);
     }
 
-    public boolean isInputValid(int id, ItemStack item) {
+    public boolean isInputValid(int id, ItemStack item)
+    {
         return input[id] != null && input[id].isValid(table, item);
     }
 
-    public void resetValidity(int id) {
+    public void resetValidity(int id)
+    {
         this.output[id] = null;
         this.input[id] = null;
     }
 
-    public void setValidity(int id, Transfer input, Transfer output) {
+    public void setValidity(int id, Transfer input, Transfer output)
+    {
         this.output[id] = output;
         this.input[id] = input;
     }
 
-    public boolean canAcceptItems() {
+    public boolean canAcceptItems()
+    {
         return true;
     }
 
-    public boolean canSupplyItems() {
+    public boolean canSupplyItems()
+    {
         return true;
     }
 
-    public boolean canAcceptItem(ItemStack item) {
+    public boolean canAcceptItem(ItemStack item)
+    {
         return true;
     }
 
     @Override
-    public int getSlotStackLimit() {
+    public int getSlotStackLimit()
+    {
         return getSlotStackLimit(null);
     }
 
-    public int getSlotStackLimit(ItemStack item) {
+    public int getSlotStackLimit(ItemStack item)
+    {
         return super.getSlotStackLimit();
     }
 
-    public boolean canPickUpOnDoubleClick() {
+    public boolean canPickUpOnDoubleClick()
+    {
         return isVisible() && isEnabled();
     }
 
-    public boolean canDragIntoSlot() {
+    public boolean canDragIntoSlot()
+    {
         return true;
     }
 
-    public boolean canShiftClickInto(ItemStack item) {
+    public boolean canShiftClickInto(ItemStack item)
+    {
         return true;
     }
 
-    public boolean shouldSlotHighlightItems() {
+    public boolean shouldSlotHighlightItems()
+    {
         return true;
     }
 
-    public boolean shouldSlotHighlightSelf() {
+    public boolean shouldSlotHighlightSelf()
+    {
         return true;
     }
 
     @SideOnly(Side.CLIENT)
-    protected static boolean shouldHighlight(SlotBase slot, SlotBase other) {
+    protected static boolean shouldHighlight(SlotBase slot, SlotBase other)
+    {
         return Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null && slot != null && !slot.getHasStack() && other != null && other.getHasStack() && slot.isItemValid(other.getStack()) && slot.getSlotStackLimit(other.getStack()) > (slot.getHasStack() ? slot.getStack().stackSize : 0);
     }
 
-    public boolean shouldDropOnClosing() {
+    public boolean shouldDropOnClosing()
+    {
         return true;
     }
 }

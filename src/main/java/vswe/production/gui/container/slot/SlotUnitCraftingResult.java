@@ -7,58 +7,70 @@ import vswe.production.page.Page;
 import vswe.production.page.unit.UnitCrafting;
 import vswe.production.tileentity.TileEntityTable;
 
-public class SlotUnitCraftingResult extends SlotUnit {
-    public SlotUnitCraftingResult(TileEntityTable table, Page page, int id, int x, int y, UnitCrafting unit) {
+public class SlotUnitCraftingResult extends SlotUnit
+{
+    public SlotUnitCraftingResult(TileEntityTable table, Page page, int id, int x, int y, UnitCrafting unit)
+    {
         super(table, page, id, x, y, unit);
     }
 
     @Override
-    public boolean isBig() {
-         return true;
+    public boolean isBig()
+    {
+        return true;
     }
 
     @Override
-    public boolean isItemValid(ItemStack itemstack) {
+    public boolean isItemValid(ItemStack itemstack)
+    {
         return false;
     }
 
     @Override
-    public void onPickupFromSlot(EntityPlayer player, ItemStack item) {
+    public void onPickupFromSlot(EntityPlayer player, ItemStack item)
+    {
         super.onPickupFromSlot(player, item);
-        ((UnitCrafting)unit).onCrafting(player, item);
+        ((UnitCrafting) unit).onCrafting(player, item);
     }
 
     @Override
-    public boolean canAcceptItems() {
+    public boolean canAcceptItems()
+    {
         return false;
     }
 
 
     @Override
-    public int getY() {
+    public int getY()
+    {
         int offset = 0;
-        if (table.getUpgradePage().hasUpgrade(unit.getId(), Upgrade.AUTO_CRAFTER)) {
+        if (table.getUpgradePage().hasUpgrade(unit.getId(), Upgrade.AUTO_CRAFTER))
+        {
             offset = UnitCrafting.RESULT_AUTO_OFFSET;
         }
         return super.getY() + offset;
     }
 
     @Override
-    public boolean canPickUpOnDoubleClick() {
+    public boolean canPickUpOnDoubleClick()
+    {
         return false;
     }
 
     @Override
-    public ItemStack decrStackSize(int count) {
+    public ItemStack decrStackSize(int count)
+    {
         ItemStack itemstack = getStack();
-        if (itemstack != null) {
+        if (itemstack != null)
+        {
             putStack(null);
         }
         return itemstack;
     }
 
     @Override
-    public boolean shouldDropOnClosing() {
+    public boolean shouldDropOnClosing()
+    {
         return false;
     }
 }

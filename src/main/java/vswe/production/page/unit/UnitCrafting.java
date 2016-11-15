@@ -4,15 +4,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemHoe;
-import net.minecraft.item.ItemPickaxe;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
+import net.minecraft.item.*;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.stats.AchievementList;
-import net.minecraft.stats.StatList;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,8 +22,10 @@ import vswe.production.page.Page;
 import vswe.production.tileentity.TileEntityTable;
 
 
-public class UnitCrafting extends Unit {
-    public UnitCrafting(TileEntityTable table, Page page, int id, int x, int y) {
+public class UnitCrafting extends Unit
+{
+    public UnitCrafting(TileEntityTable table, Page page, int id, int x, int y)
+    {
         super(table, page, id, x, y);
     }
 
@@ -52,15 +49,19 @@ public class UnitCrafting extends Unit {
     private int outputId;
 
     @Override
-    public int createSlots(int id) {
+    public int createSlots(int id)
+    {
         gridId = id;
-        for (int y = 0; y < GRID_HEIGHT; y++) {
-            for (int x = 0; x < GRID_WIDTH; x++) {
+        for (int y = 0; y < GRID_HEIGHT; y++)
+        {
+            for (int x = 0; x < GRID_WIDTH; x++)
+            {
                 addSlot(new SlotUnitCraftingGrid(table, page, id++, this.x + START_X + x * SLOT_SIZE, this.y + START_Y + y * SLOT_SIZE, this));
             }
         }
 
-        for (int i = 0; i < STORAGE_COUNT; i++) {
+        for (int i = 0; i < STORAGE_COUNT; i++)
+        {
             addSlot(new SlotUnitCraftingStorage(table, page, id++, this.x + START_X + i * SLOT_SIZE, this.y + STORAGE_Y, this));
         }
 
@@ -74,7 +75,8 @@ public class UnitCrafting extends Unit {
     }
 
     @Override
-    public boolean isEnabled() {
+    public boolean isEnabled()
+    {
         ItemStack item = table.getUpgradePage().getUpgradeMainItem(id);
 
         return item != null && Item.getItemFromBlock(Blocks.CRAFTING_TABLE) == item.getItem();
@@ -82,63 +84,84 @@ public class UnitCrafting extends Unit {
 
 
     @Override
-    protected boolean canCharge() {
+    protected boolean canCharge()
+    {
         return super.canCharge() && table.getUpgradePage().hasUpgrade(id, Upgrade.AUTO_CRAFTER);
     }
 
-    public void onCrafting(EntityPlayer player, ItemStack item) {
+    public void onCrafting(EntityPlayer player, ItemStack item)
+    {
         onCrafted(player, item);
         lockedRecipeGeneration = true;
-        try {
+        try
+        {
             onCrafting(inventoryCrafting, player == null, false);
-        }finally {
+        } finally
+        {
             lockedRecipeGeneration = false;
         }
         onGridChanged();
     }
 
-    private void onCrafted(EntityPlayer player, ItemStack itemStack) {
-        if (itemStack == null) {
+    private void onCrafted(EntityPlayer player, ItemStack itemStack)
+    {
+        if (itemStack == null)
+        {
             return;
         }
         Item item = itemStack.getItem();
 
-        try {
+        try
+        {
             FMLCommonHandler.instance().firePlayerCraftingEvent(player, itemStack, inventoryCrafting);
-        }catch (Exception ex) {
+        } catch (Exception ex)
+        {
             ex.printStackTrace();
         }
-        if(player != null) {
+        if (player != null)
+        {
 //            player.addStat(StatList.objectCraftStats[Item.getIdFromItem(item)], itemStack.stackSize);
         }
-        try {
+        try
+        {
             item.onCreated(itemStack, table.getWorld(), player);
-        }catch (Exception ex) {
+        } catch (Exception ex)
+        {
             ex.printStackTrace();
         }
 
-        if (player != null) {
-            if (item == Item.getItemFromBlock(Blocks.CRAFTING_TABLE)) {
+        if (player != null)
+        {
+            if (item == Item.getItemFromBlock(Blocks.CRAFTING_TABLE))
+            {
                 player.addStat(AchievementList.BUILD_WORK_BENCH, 1);
-            }else if (item instanceof ItemPickaxe) {
+            } else if (item instanceof ItemPickaxe)
+            {
                 player.addStat(AchievementList.BUILD_PICKAXE, 1);
 
 //                if (((ItemPickaxe)item).func_150913_i() != Item.ToolMaterial.WOOD) {
 //                    player.addStat(AchievementList.buildBetterPickaxe, 1);
 //                }
-            }else if (item == Item.getItemFromBlock(Blocks.FURNACE)) {
+            } else if (item == Item.getItemFromBlock(Blocks.FURNACE))
+            {
                 player.addStat(AchievementList.BUILD_FURNACE, 1);
-            }else if (item instanceof ItemHoe) {
+            } else if (item instanceof ItemHoe)
+            {
                 player.addStat(AchievementList.BUILD_HOE, 1);
-            }else if (item == Items.BREAD) {
+            } else if (item == Items.BREAD)
+            {
                 player.addStat(AchievementList.MAKE_BREAD, 1);
-            }else if (item == Items.CAKE) {
+            } else if (item == Items.CAKE)
+            {
                 player.addStat(AchievementList.BAKE_CAKE, 1);
-            }else if (item instanceof ItemSword) {
+            } else if (item instanceof ItemSword)
+            {
                 player.addStat(AchievementList.BUILD_SWORD, 1);
-            }else if (item == Item.getItemFromBlock(Blocks.ENCHANTING_TABLE)) {
+            } else if (item == Item.getItemFromBlock(Blocks.ENCHANTING_TABLE))
+            {
                 player.addStat(AchievementList.ENCHANTMENTS, 1);
-            }else if (item == Item.getItemFromBlock(Blocks.BOOKSHELF)) {
+            } else if (item == Item.getItemFromBlock(Blocks.BOOKSHELF))
+            {
                 player.addStat(AchievementList.BOOKCASE, 1);
             }
         }
@@ -152,12 +175,15 @@ public class UnitCrafting extends Unit {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void draw(GuiBase gui, int mX, int mY) {
+    public void draw(GuiBase gui, int mX, int mY)
+    {
         super.draw(gui, mX, mY);
 
         boolean isEmpty = true;
-        for (int i = gridId; i < gridId + GRID_SIZE; i++) {
-            if (table.getStackInSlot(i) != null) {
+        for (int i = gridId; i < gridId + GRID_SIZE; i++)
+        {
+            if (table.getStackInSlot(i) != null)
+            {
                 isEmpty = false;
                 break;
             }
@@ -167,12 +193,15 @@ public class UnitCrafting extends Unit {
         int y = this.y + START_Y + CLEAR_OFFSET_Y;
 
         int index;
-        if (isEmpty) {
+        if (isEmpty)
+        {
             index = 0;
-        }else if (gui.inBounds(x, y, CLEAR_SIZE, CLEAR_SIZE, mX, mY)){
+        } else if (gui.inBounds(x, y, CLEAR_SIZE, CLEAR_SIZE, mX, mY))
+        {
             index = 2;
             gui.drawMouseOver("Clear grid");
-        }else{
+        } else
+        {
             index = 1;
         }
 
@@ -190,17 +219,22 @@ public class UnitCrafting extends Unit {
 //        }
 //    }
 
-    private void onCrafting(CraftingBase crafting, boolean auto, boolean fake) {
-        for (int i = 0; i < GRID_SIZE; i++) {
+    private void onCrafting(CraftingBase crafting, boolean auto, boolean fake)
+    {
+        for (int i = 0; i < GRID_SIZE; i++)
+        {
             ItemStack itemStack = crafting.getStackInSlot(i);
-            if (itemStack != null && itemStack.getItem() != null) {
+            if (itemStack != null && itemStack.getItem() != null)
+            {
                 int id = i;
-                for (int j = auto ? 0 : GRID_SIZE; j < crafting.getFullSize(); j++) {
+                for (int j = auto ? 0 : GRID_SIZE; j < crafting.getFullSize(); j++)
+                {
                     if (i == j) continue;
 
                     ItemStack other = crafting.getStackInSlot(j);
                     //TODO support ore dictionary and fuzzy etc?. Problem is that it needs to figure out if hte recipe supports it
-                    if (other != null && (j >= GRID_SIZE || other.stackSize > itemStack.stackSize) && itemStack.isItemEqual(other) && ItemStack.areItemStackTagsEqual(itemStack, other)) {
+                    if (other != null && (j >= GRID_SIZE || other.stackSize > itemStack.stackSize) && itemStack.isItemEqual(other) && ItemStack.areItemStackTagsEqual(itemStack, other))
+                    {
                         id = j;
                         itemStack = other;
                         break;
@@ -208,17 +242,21 @@ public class UnitCrafting extends Unit {
                 }
 
                 crafting.decrStackSize(id, 1);
-                if (itemStack.getItem().hasContainerItem(itemStack)) {
+                if (itemStack.getItem().hasContainerItem(itemStack))
+                {
                     ItemStack containerItem = itemStack.getItem().getContainerItem(itemStack);
-                    if (!containerItem.isItemStackDamageable() || containerItem.getItemDamage() <= containerItem.getMaxDamage()) {
+                    if (!containerItem.isItemStackDamageable() || containerItem.getItemDamage() <= containerItem.getMaxDamage())
+                    {
                         //TODO where should the container go?
 //                        if (false && itemStack.getItem().doesContainerItemLeaveCraftingGrid(itemStack)) {
-                            if (!fake) {
-                                table.spitOutItem(containerItem);
-                            }
-                        }else{
-                            crafting.setInventorySlotContents(id, containerItem);
+                        if (!fake)
+                        {
+                            table.spitOutItem(containerItem);
                         }
+                    } else
+                    {
+                        crafting.setInventorySlotContents(id, containerItem);
+                    }
 //                    }
                 }
             }
@@ -228,27 +266,34 @@ public class UnitCrafting extends Unit {
 
     private CraftingBase inventoryCrafting = new CraftingWrapper();
 
-    public int getGridId() {
+    public int getGridId()
+    {
         return gridId;
     }
 
     private boolean canAutoCraft;
     private boolean lockedRecipeGeneration;
 
-    public void onGridChanged() {
-        if (!lockedRecipeGeneration) {
+    public void onGridChanged()
+    {
+        if (!lockedRecipeGeneration)
+        {
             IRecipe recipe = inventoryCrafting.getRecipe();
             ItemStack result = inventoryCrafting.getResult(recipe);
-            if (result != null) {
+            if (result != null)
+            {
                 result = result.copy();
             }
             table.setInventorySlotContents(resultId, result);
 
 
-            if (table.getUpgradePage().hasUpgrade(id, Upgrade.AUTO_CRAFTER)) {
-                if (recipe == null) {
+            if (table.getUpgradePage().hasUpgrade(id, Upgrade.AUTO_CRAFTER))
+            {
+                if (recipe == null)
+                {
                     canAutoCraft = false;
-                }else{
+                } else
+                {
                     CraftingBase dummy = new CraftingDummy(inventoryCrafting);
                     onCrafting(dummy, true, true);
                     canAutoCraft = dummy.isMatch(recipe);
@@ -260,12 +305,16 @@ public class UnitCrafting extends Unit {
     private int canCraftTick = 0;
     private static final int CAN_CRAFT_DELAY = 10;
     private CraftingBase oldGrid;
+
     @Override
-    public void onUpdate() {
+    public void onUpdate()
+    {
         super.onUpdate();
-        if (++canCraftTick == CAN_CRAFT_DELAY) {
+        if (++canCraftTick == CAN_CRAFT_DELAY)
+        {
             canCraftTick = 0;
-            if (oldGrid == null || !oldGrid.equals(inventoryCrafting)) {
+            if (oldGrid == null || !oldGrid.equals(inventoryCrafting))
+            {
                 oldGrid = new CraftingDummy(inventoryCrafting);
                 onGridChanged();
             }
@@ -274,7 +323,9 @@ public class UnitCrafting extends Unit {
 
     private boolean hadAutoCraft;
     private boolean firstAutoCraftCheck = true;
-    public void onUpgradeChange() {
+
+    public void onUpgradeChange()
+    {
         boolean autoCraft = table.getUpgradePage().hasUpgrade(id, Upgrade.AUTO_CRAFTER);
         boolean update = firstAutoCraftCheck || (autoCraft && !hadAutoCraft);
 
@@ -282,89 +333,109 @@ public class UnitCrafting extends Unit {
         hadAutoCraft = autoCraft;
         firstAutoCraftCheck = false;
 
-        if (update) {
+        if (update)
+        {
             onGridChanged();
         }
     }
 
 
-    private class CraftingWrapper extends CraftingBase {
+    private class CraftingWrapper extends CraftingBase
+    {
         @Override
-        public ItemStack getStackInSlot(int id) {
+        public ItemStack getStackInSlot(int id)
+        {
             return table.getStackInSlot(gridId + id);
         }
 
         @Override
-        public void setInventorySlotContents(int id, ItemStack item) {
+        public void setInventorySlotContents(int id, ItemStack item)
+        {
             table.setInventorySlotContents(gridId + id, item);
         }
     }
 
-    private class CraftingDummy extends CraftingBase {
+    private class CraftingDummy extends CraftingBase
+    {
         private ItemStack[] items;
 
-        private CraftingDummy(CraftingBase base) {
+        private CraftingDummy(CraftingBase base)
+        {
             items = new ItemStack[base.getFullSize()];
-            for (int i = 0; i < items.length; i++) {
+            for (int i = 0; i < items.length; i++)
+            {
                 ItemStack itemStack = base.getStackInSlot(i);
-                if (itemStack != null) {
+                if (itemStack != null)
+                {
                     items[i] = itemStack.copy();
                 }
             }
         }
 
         @Override
-        public int getFullSize() {
+        public int getFullSize()
+        {
             return items.length;
         }
 
         @Override
-        public ItemStack getStackInSlot(int id) {
+        public ItemStack getStackInSlot(int id)
+        {
             return items[id];
         }
 
         @Override
-        public void setInventorySlotContents(int id, ItemStack item) {
+        public void setInventorySlotContents(int id, ItemStack item)
+        {
             items[id] = item;
         }
     }
 
-    private class CraftingBase extends InventoryCrafting {
+    private class CraftingBase extends InventoryCrafting
+    {
 
         private static final int INVENTORY_WIDTH = 3;
         private static final int INVENTORY_HEIGHT = 3;
 
-        public CraftingBase() {
+        public CraftingBase()
+        {
             super(null, INVENTORY_WIDTH, INVENTORY_HEIGHT);
         }
 
         @Override
-        public final int getSizeInventory() {
+        public final int getSizeInventory()
+        {
             return INVENTORY_WIDTH * INVENTORY_HEIGHT;
         }
 
-        protected int getFullSize() {
+        protected int getFullSize()
+        {
             return INVENTORY_WIDTH * INVENTORY_HEIGHT + (table.getUpgradePage().hasUpgrade(id, Upgrade.STORAGE) ? STORAGE_COUNT : 0);
         }
 
 
         @Override
-        public ItemStack decrStackSize(int id, int count) {
+        public ItemStack decrStackSize(int id, int count)
+        {
             ItemStack item = getStackInSlot(id);
-            if (item != null) {
-                if (item.stackSize <= count) {
+            if (item != null)
+            {
+                if (item.stackSize <= count)
+                {
                     setInventorySlotContents(id, null);
                     return item;
                 }
 
                 ItemStack result = item.splitStack(count);
 
-                if (item.stackSize == 0) {
+                if (item.stackSize == 0)
+                {
                     setInventorySlotContents(id, null);
                 }
 
                 return result;
-            }else {
+            } else
+            {
                 return null;
             }
         }
@@ -377,37 +448,47 @@ public class UnitCrafting extends Unit {
 //        }
 
         @Override
-        public ItemStack getStackInRowAndColumn(int x, int y) {
-            if (x >= 0 && x < INVENTORY_WIDTH){
+        public ItemStack getStackInRowAndColumn(int x, int y)
+        {
+            if (x >= 0 && x < INVENTORY_WIDTH)
+            {
                 int id = x + y * INVENTORY_WIDTH;
                 return this.getStackInSlot(id);
-            }else{
+            } else
+            {
                 return null;
             }
         }
 
 
-        public ItemStack getResult() {
+        public ItemStack getResult()
+        {
             return getResult(getRecipe());
         }
 
-        public ItemStack getResult(IRecipe recipe) {
+        public ItemStack getResult(IRecipe recipe)
+        {
             return recipe == null ? null : recipe.getCraftingResult(this);
         }
 
-        public boolean isMatch(IRecipe recipe) {
+        public boolean isMatch(IRecipe recipe)
+        {
             return recipe.matches(this, table.getWorld());
         }
 
-        public IRecipe getRecipe() {
-            if (isMatch(REPAIR_RECIPE)) {
+        public IRecipe getRecipe()
+        {
+            if (isMatch(REPAIR_RECIPE))
+            {
                 return REPAIR_RECIPE;
             }
 
-            for (int i = 0; i < CraftingManager.getInstance().getRecipeList().size(); i++) {
+            for (int i = 0; i < CraftingManager.getInstance().getRecipeList().size(); i++)
+            {
                 IRecipe recipe = (IRecipe) CraftingManager.getInstance().getRecipeList().get(i);
 
-                if (isMatch(recipe)) {
+                if (isMatch(recipe))
+                {
                     return recipe;
                 }
             }
@@ -416,16 +497,19 @@ public class UnitCrafting extends Unit {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(Object obj)
+        {
             if (this == obj) return true;
             if (!(obj instanceof CraftingBase)) return false;
 
-            CraftingBase crafting = (CraftingBase)obj;
+            CraftingBase crafting = (CraftingBase) obj;
 
             if (getFullSize() != crafting.getFullSize()) return false;
 
-            for (int i = 0; i < getFullSize(); i++) {
-                if (!ItemStack.areItemStacksEqual(getStackInSlot(i), crafting.getStackInSlot(i))) {
+            for (int i = 0; i < getFullSize(); i++)
+            {
+                if (!ItemStack.areItemStacksEqual(getStackInSlot(i), crafting.getStackInSlot(i)))
+                {
                     return false;
                 }
             }
@@ -435,28 +519,37 @@ public class UnitCrafting extends Unit {
     }
 
     private static final IRecipe REPAIR_RECIPE = new RepairRecipe();
-    private static class RepairRecipe implements IRecipe {
+
+    private static class RepairRecipe implements IRecipe
+    {
 
         @Override
-        public boolean matches(InventoryCrafting crafting, World world) {
+        public boolean matches(InventoryCrafting crafting, World world)
+        {
             return getCraftingResult(crafting) != null;
         }
 
         @Override
-        public ItemStack getCraftingResult(InventoryCrafting crafting) {
+        public ItemStack getCraftingResult(InventoryCrafting crafting)
+        {
             Item repairItem = null;
             int count = 0;
             int units = 0;
-            for (int i = 0; i < crafting.getSizeInventory(); i++) {
+            for (int i = 0; i < crafting.getSizeInventory(); i++)
+            {
                 ItemStack item = crafting.getStackInSlot(i);
-                if (item != null) {
-                    if (repairItem == null) {
+                if (item != null)
+                {
+                    if (repairItem == null)
+                    {
                         repairItem = item.getItem();
-                        if (!repairItem.isRepairable()) {
+                        if (!repairItem.isRepairable())
+                        {
                             return null;
                         }
                         units = repairItem.getMaxDamage() * 5 / 100;
-                    }else if (repairItem != item.getItem() || item.stackSize != 1 || count == 2) {
+                    } else if (repairItem != item.getItem() || item.stackSize != 1 || count == 2)
+                    {
                         return null;
                     }
 
@@ -465,24 +558,29 @@ public class UnitCrafting extends Unit {
                 }
             }
 
-            if (repairItem != null && count == 2) {
-                int damage =  repairItem.getMaxDamage() - units;
-                if (damage < 0) {
+            if (repairItem != null && count == 2)
+            {
+                int damage = repairItem.getMaxDamage() - units;
+                if (damage < 0)
+                {
                     damage = 0;
                 }
                 return new ItemStack(repairItem, 1, damage);
-            }else{
+            } else
+            {
                 return null;
             }
         }
 
         @Override
-        public int getRecipeSize() {
+        public int getRecipeSize()
+        {
             return 9;
         }
 
         @Override
-        public ItemStack getRecipeOutput() {
+        public ItemStack getRecipeOutput()
+        {
             return null;
         }
 
@@ -495,24 +593,30 @@ public class UnitCrafting extends Unit {
 
 
     @Override
-    protected int getArrowX() {
+    protected int getArrowX()
+    {
         return START_X + ARROW_X;
     }
 
     @Override
-    protected int getArrowY() {
+    protected int getArrowY()
+    {
         int offset = 0;
-        if (table.getUpgradePage().hasUpgrade(id, Upgrade.AUTO_CRAFTER)) {
+        if (table.getUpgradePage().hasUpgrade(id, Upgrade.AUTO_CRAFTER))
+        {
             offset = RESULT_AUTO_OFFSET;
         }
         return START_Y + ARROW_Y + offset;
     }
 
     @Override
-    protected ItemStack getProductionResult() {
-        if (table.getUpgradePage().hasUpgrade(id, Upgrade.AUTO_CRAFTER)) {
+    protected ItemStack getProductionResult()
+    {
+        if (table.getUpgradePage().hasUpgrade(id, Upgrade.AUTO_CRAFTER))
+        {
             ItemStack result = table.getStackInSlot(resultId);
-            if (result != null && canAutoCraft) {
+            if (result != null && canAutoCraft)
+            {
                 return result;
             }
         }
@@ -521,12 +625,14 @@ public class UnitCrafting extends Unit {
     }
 
     @Override
-    protected int getOutputId() {
+    protected int getOutputId()
+    {
         return outputId;
     }
 
     @Override
-    protected void onProduction(ItemStack result) {
+    protected void onProduction(ItemStack result)
+    {
         onCrafting(null, result);
     }
 }

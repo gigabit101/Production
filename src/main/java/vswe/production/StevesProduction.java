@@ -14,7 +14,8 @@ import vswe.production.item.ModItems;
 import vswe.production.network.PacketHandler;
 
 @Mod(modid = "StevesWorkshop", name = StevesProduction.NAME, version = StevesProduction.VERSION)
-public class StevesProduction {
+public class StevesProduction
+{
     public static final String CHANNEL = "SWorkshop";
     public static final String NAME = "Steve's Workshop";
     public static final String VERSION = "0.5.0";
@@ -26,7 +27,8 @@ public class StevesProduction {
 
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         ConfigLoader.init(event.getSuggestedConfigurationFile());
         packetHandler = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNEL);
         new CreativeTabProduction();
@@ -35,13 +37,15 @@ public class StevesProduction {
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event)
+    {
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
         packetHandler.register(new PacketHandler());
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+    public void postInit(FMLPostInitializationEvent event)
+    {
 
     }
 

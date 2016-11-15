@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -23,8 +22,10 @@ import vswe.production.tileentity.TileEntityTable;
 
 import javax.annotation.Nullable;
 
-public class BlockTable extends BlockContainer {
-    protected BlockTable() {
+public class BlockTable extends BlockContainer
+{
+    protected BlockTable()
+    {
         super(Material.ROCK);
         setCreativeTab(CreativeTabProduction.getTab());
         setHardness(3.5F);
@@ -33,7 +34,8 @@ public class BlockTable extends BlockContainer {
     }
 
     @Override
-    public TileEntity createNewTileEntity(World world, int meta) {
+    public TileEntity createNewTileEntity(World world, int meta)
+    {
         return new TileEntityTable();
     }
 //
@@ -77,22 +79,29 @@ public class BlockTable extends BlockContainer {
         return EnumBlockRenderType.MODEL;
     }
 
-    public static int getSideFromSideAndMeta(int side, int meta) {
-        if (side <= 1) {
+    public static int getSideFromSideAndMeta(int side, int meta)
+    {
+        if (side <= 1)
+        {
             return side;
-        }else{
+        } else
+        {
             int index = SIDES_INDICES[side - 2] - meta;
-            if (index < 0) {
+            if (index < 0)
+            {
                 index += SIDES.length;
             }
             return SIDES[index] + 2;
         }
     }
 
-    public static int getSideFromSideAndMetaReversed(int side, int meta) {
-        if (side <= 1) {
+    public static int getSideFromSideAndMetaReversed(int side, int meta)
+    {
+        if (side <= 1)
+        {
             return side;
-        }else{
+        } else
+        {
             int index = SIDES_INDICES[side - 2] + meta;
             index %= SIDES.length;
 
@@ -132,12 +141,15 @@ public class BlockTable extends BlockContainer {
     {
         TileEntity te = world.getTileEntity(pos);
 
-        if (te instanceof IInventory) {
-            IInventory inventory = (IInventory)te;
-            for (int i = 0; i < inventory.getSizeInventory(); ++i) {
+        if (te instanceof IInventory)
+        {
+            IInventory inventory = (IInventory) te;
+            for (int i = 0; i < inventory.getSizeInventory(); ++i)
+            {
                 ItemStack item = inventory.getStackInSlot(i);
 
-                if (item != null) {
+                if (item != null)
+                {
                     float offsetX = world.rand.nextFloat() * 0.8F + 0.1F;
                     float offsetY = world.rand.nextFloat() * 0.8F + 0.1F;
                     float offsetZ = world.rand.nextFloat() * 0.8F + 0.1F;

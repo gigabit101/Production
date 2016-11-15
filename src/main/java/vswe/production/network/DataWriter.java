@@ -1,9 +1,7 @@
 package vswe.production.network;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -12,14 +10,15 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import vswe.production.Utils;
 
-import static vswe.production.StevesProduction.CHANNEL;
-import static vswe.production.StevesProduction.packetHandler;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class DataWriter {
+import static vswe.production.StevesProduction.CHANNEL;
+import static vswe.production.StevesProduction.packetHandler;
+
+public class DataWriter
+{
     private OutputStream stream;
     private int byteBuffer;
     private int bitCountBuffer;
@@ -29,7 +28,8 @@ public class DataWriter {
         stream = new ByteArrayOutputStream();
     }
 
-    public void writeData(int data, IBitCount bitCount) {
+    public void writeData(int data, IBitCount bitCount)
+    {
         writeData(data, bitCount.getBitCount());
     }
 
@@ -70,19 +70,24 @@ public class DataWriter {
         }
     }
 
-    public void writeString(String str) {
+    public void writeString(String str)
+    {
         writeString(str, StandardCounts.DEFAULT_STRING);
     }
 
-    public void writeString(String str, IBitCount bits) {
-        if (str != null) {
+    public void writeString(String str, IBitCount bits)
+    {
+        if (str != null)
+        {
             byte[] bytes = str.getBytes();
-            int l = Math.min(bytes.length, (int)Math.pow(2, bits.getBitCount()) - 1);
+            int l = Math.min(bytes.length, (int) Math.pow(2, bits.getBitCount()) - 1);
             writeData(l, bits);
-            for (int i = 0; i < l; i++) {
+            for (int i = 0; i < l; i++)
+            {
                 writeByte(bytes[i]);
             }
-        }else{
+        } else
+        {
             writeData(0, bits);
         }
     }
@@ -135,61 +140,72 @@ public class DataWriter {
     }
 
 
-
-    void sendToPlayer(EntityPlayerMP player) {
+    void sendToPlayer(EntityPlayerMP player)
+    {
         packetHandler.sendTo(createPacket(), player);
     }
 
-    void sendToServer() {
+    void sendToServer()
+    {
         packetHandler.sendToServer(createPacket());
     }
 
 
-    void sendToAllPlayers() {
+    void sendToAllPlayers()
+    {
         packetHandler.sendToAll(createPacket());
     }
 
-    void sendToAllPlayersAround(TileEntity te, double range) {
+    void sendToAllPlayersAround(TileEntity te, double range)
+    {
         sendToAllPlayersAround(te.getWorld(), te.getPos().getX(), te.getPos().getY(), te.getPos().getZ(), range);
     }
 
-    void sendToAllPlayersAround(World world, int x, int y, int z, double range) {
-        packetHandler.sendToAllAround(createPacket(), new NetworkRegistry.TargetPoint(world.provider.getDimension(), x + 0.5,y + 0.5, z, range));
+    void sendToAllPlayersAround(World world, int x, int y, int z, double range)
+    {
+        packetHandler.sendToAllAround(createPacket(), new NetworkRegistry.TargetPoint(world.provider.getDimension(), x + 0.5, y + 0.5, z, range));
     }
-
 
 
     /**
      * Easy access methods
      */
 
-    public void writeBoolean(boolean data) {
+    public void writeBoolean(boolean data)
+    {
         writeData(data ? 1 : 0, StandardCounts.BOOLEAN);
     }
 
-    public void writeByte(int data) {
+    public void writeByte(int data)
+    {
         writeData(data, StandardCounts.BYTE);
     }
 
-    public void writeShort(int data) {
+    public void writeShort(int data)
+    {
         writeData(data, StandardCounts.SHORT);
     }
 
-    public void writeInteger(int data) {
+    public void writeInteger(int data)
+    {
         writeData(data, StandardCounts.INTEGER);
     }
 
-    public void writeEnum(Enum data) {
-        try {
+    public void writeEnum(Enum data)
+    {
+        try
+        {
             Class<? extends Enum> clazz = data.getDeclaringClass();
-            int length = ((Object[])clazz.getMethod("values").invoke(null)).length;
-            if (length == 0) {
+            int length = ((Object[]) clazz.getMethod("values").invoke(null)).length;
+            if (length == 0)
+            {
                 return;
             }
-            int bitCount = (int)(Math.log10(length) / Math.log10(2)) + 1;
+            int bitCount = (int) (Math.log10(length) / Math.log10(2)) + 1;
 
             writeData(data.ordinal(), bitCount);
-        }catch (Exception ex) {
+        } catch (Exception ex)
+        {
             ex.printStackTrace();
         }
     }

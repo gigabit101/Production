@@ -10,54 +10,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class PageMain extends Page {
+public class PageMain extends Page
+{
     private List<Unit> units;
     private List<UnitCrafting> craftingList;
     private List<UnitSmelting> smeltingList;
 
 
-    public PageMain(TileEntityTable table, String name) {
+    public PageMain(TileEntityTable table, String name)
+    {
         super(table, name);
 
         units = new ArrayList<Unit>();
         craftingList = new ArrayList<UnitCrafting>();
         smeltingList = new ArrayList<UnitSmelting>();
-        for (int i = 0; i < 4; i++){
+        for (int i = 0; i < 4; i++)
+        {
             addUnit(i);
         }
     }
 
-    private void addUnit(int id) {
+    private void addUnit(int id)
+    {
         int x = (id % 2) * WIDTH / 2;
         int y = (id / 2) * HEIGHT / 2;
-        UnitCrafting crafting = new UnitCrafting(table, this, id, x, y );
-        UnitSmelting smelting = new UnitSmelting(table, this, id, x, y );
+        UnitCrafting crafting = new UnitCrafting(table, this, id, x, y);
+        UnitSmelting smelting = new UnitSmelting(table, this, id, x, y);
         craftingList.add(crafting);
         smeltingList.add(smelting);
         units.add(crafting);
         units.add(smelting);
     }
 
-    public List<UnitSmelting> getSmeltingList() {
+    public List<UnitSmelting> getSmeltingList()
+    {
         return smeltingList;
     }
 
-    public List<UnitCrafting> getCraftingList() {
+    public List<UnitCrafting> getCraftingList()
+    {
         return craftingList;
     }
 
     @Override
-    public void onUpdate() {
-        for (Unit unit : units) {
-            if (unit.isEnabled()) {
+    public void onUpdate()
+    {
+        for (Unit unit : units)
+        {
+            if (unit.isEnabled())
+            {
                 unit.onUpdate();
             }
         }
     }
 
     @Override
-    public int createSlots(int id) {
-        for (Unit unit : units) {
+    public int createSlots(int id)
+    {
+        for (Unit unit : units)
+        {
             id = unit.createSlots(id);
         }
 
@@ -77,28 +88,35 @@ public class PageMain extends Page {
     private static final int BAR_VERTICAL_Y = (HEIGHT - BAR_HEIGHT) / 2;
 
     @Override
-    public void draw(GuiBase gui, int mX, int mY) {
+    public void draw(GuiBase gui, int mX, int mY)
+    {
         gui.prepare();
         gui.drawRect(BAR_HORIZONTAL_X, BAR_HORIZONTAL_Y, 0, TEXTURE_SHEET_SIZE - BAR_THICKNESS, BAR_WIDTH, BAR_THICKNESS);
         gui.drawRect(BAR_VERTICAL_X, BAR_VERTICAL_Y, TEXTURE_SHEET_SIZE - BAR_THICKNESS, 0, BAR_THICKNESS, BAR_HEIGHT);
 
-        for (Unit unit : units) {
-            if (unit.isEnabled()) {
+        for (Unit unit : units)
+        {
+            if (unit.isEnabled())
+            {
                 unit.draw(gui, mX, mY);
             }
         }
     }
 
     @Override
-    public void onClick(GuiBase gui, int mX, int mY, int button) {
-        for (Unit unit : units) {
-            if (unit.isEnabled()) {
+    public void onClick(GuiBase gui, int mX, int mY, int button)
+    {
+        for (Unit unit : units)
+        {
+            if (unit.isEnabled())
+            {
 //                unit.onClick(gui, mX, mY);
             }
         }
     }
 
-    public List<Unit> getUnits() {
+    public List<Unit> getUnits()
+    {
         return units;
     }
 }

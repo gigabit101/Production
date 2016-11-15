@@ -11,23 +11,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.*;
 import vswe.production.block.BlockTable;
 import vswe.production.gui.container.slot.SlotBase;
 import vswe.production.gui.container.slot.SlotFuel;
 import vswe.production.gui.menu.GuiMenu;
 import vswe.production.gui.menu.GuiMenuItem;
 import vswe.production.item.Upgrade;
-import vswe.production.network.DataReader;
-import vswe.production.network.DataWriter;
-import vswe.production.network.IBitCount;
-import vswe.production.network.LengthCount;
-import vswe.production.network.PacketHandler;
-import vswe.production.network.PacketId;
+import vswe.production.network.*;
+import vswe.production.network.data.DataType;
 import vswe.production.page.Page;
 import vswe.production.page.PageMain;
 import vswe.production.page.PageTransfer;
@@ -35,7 +27,6 @@ import vswe.production.page.PageUpgrades;
 import vswe.production.page.setting.Setting;
 import vswe.production.page.setting.Side;
 import vswe.production.page.setting.Transfer;
-import vswe.production.network.data.DataType;
 import vswe.production.page.unit.Unit;
 import vswe.production.page.unit.UnitCrafting;
 
@@ -56,15 +47,18 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     public static final int MAX_POWER = 20000;
     private SlotFuel fuelSlot;
 
-    public int getPower() {
+    public int getPower()
+    {
         return power;
     }
 
-    public void setPower(int power) {
+    public void setPower(int power)
+    {
         this.power = power;
     }
 
-    public TileEntityTable() {
+    public TileEntityTable()
+    {
         pages = new ArrayList<Page>();
         pages.add(new PageMain(this, "Main"));
         pages.add(new PageTransfer(this, "Transfer"));
@@ -74,7 +68,8 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         slots = new ArrayList<SlotBase>();
         int id = 0;
         addSlot(fuelSlot = new SlotFuel(this, null, id++, 226, 226));
-        for (Page page : pages) {
+        for (Page page : pages)
+        {
             id = page.createSlots(id);
         }
         items = new ItemStack[slots.size()];
@@ -83,65 +78,80 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         onUpgradeChange();
     }
 
-    public List<SlotBase> getSlots() {
+    public List<SlotBase> getSlots()
+    {
         return slots;
     }
 
-    public List<Page> getPages() {
+    public List<Page> getPages()
+    {
         return pages;
     }
 
-    public Page getSelectedPage() {
+    public Page getSelectedPage()
+    {
         return selectedPage;
     }
 
-    public void setSelectedPage(Page selectedPage) {
+    public void setSelectedPage(Page selectedPage)
+    {
         this.selectedPage = selectedPage;
     }
 
-    public ItemStack[] getItems() {
+    public ItemStack[] getItems()
+    {
         return items;
     }
 
     @Override
-    public int getSizeInventory() {
+    public int getSizeInventory()
+    {
         return items.length;
     }
 
-    public PageMain getMainPage() {
-        return (PageMain)pages.get(0);
+    public PageMain getMainPage()
+    {
+        return (PageMain) pages.get(0);
     }
 
-    public PageTransfer getTransferPage() {
-        return (PageTransfer)pages.get(1);
+    public PageTransfer getTransferPage()
+    {
+        return (PageTransfer) pages.get(1);
     }
 
-    public PageUpgrades getUpgradePage() {
-        return (PageUpgrades)pages.get(2);
+    public PageUpgrades getUpgradePage()
+    {
+        return (PageUpgrades) pages.get(2);
     }
 
     @Override
-    public ItemStack getStackInSlot(int id) {
+    public ItemStack getStackInSlot(int id)
+    {
         return items[id];
     }
 
     @Override
-    public ItemStack decrStackSize(int id, int count) {
+    public ItemStack decrStackSize(int id, int count)
+    {
         ItemStack item = getStackInSlot(id);
-        if (item != null) {
-            if (item.stackSize <= count) {
+        if (item != null)
+        {
+            if (item.stackSize <= count)
+            {
                 setInventorySlotContents(id, null);
                 return item;
             }
 
             ItemStack result = item.splitStack(count);
 
-            if (item.stackSize == 0) {
+            if (item.stackSize == 0)
+            {
                 setInventorySlotContents(id, null);
             }
 
             return result;
-        }else {
+        } else
+        {
             return null;
         }
     }
@@ -165,90 +175,116 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
 //    }
 
     @Override
-    public void setInventorySlotContents(int id, ItemStack item) {
+    public void setInventorySlotContents(int id, ItemStack item)
+    {
         items[id] = item;
     }
 
 
     @Override
-    public int getInventoryStackLimit() {
+    public int getInventoryStackLimit()
+    {
         return 64;
     }
 
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
+    public boolean isUseableByPlayer(EntityPlayer player)
+    {
         return true;
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {}
+    public void openInventory(EntityPlayer player)
+    {
+    }
 
     @Override
-    public void closeInventory(EntityPlayer player) {}
+    public void closeInventory(EntityPlayer player)
+    {
+    }
 
 
-    public void addSlot(SlotBase slot) {
+    public void addSlot(SlotBase slot)
+    {
         slots.add(slot);
     }
 
     private List<EntityPlayer> players = new ArrayList<EntityPlayer>();
-    public void addPlayer(EntityPlayer player) {
-        if (!players.contains(player)) {
+
+    public void addPlayer(EntityPlayer player)
+    {
+        if (!players.contains(player))
+        {
             players.add(player);
             sendAllDataToPlayer(player);
-        }else{
+        } else
+        {
             System.err.println("Trying to add a listening player: " + player.toString());
         }
     }
 
-    private void sendAllDataToPlayer(EntityPlayer player) {
+    private void sendAllDataToPlayer(EntityPlayer player)
+    {
         DataWriter dw = PacketHandler.getWriter(this, PacketId.ALL);
-        for (DataType dataType : DataType.values()) {
+        for (DataType dataType : DataType.values())
+        {
             dataType.save(this, dw, -1);
         }
         PacketHandler.sendToPlayer(dw, player);
     }
 
-    public void sendDataToAllPlayer(DataType dataType) {
+    public void sendDataToAllPlayer(DataType dataType)
+    {
         sendDataToAllPlayer(dataType, 0);
     }
 
-    public void sendDataToAllPlayer(DataType dataType, int id) {
+    public void sendDataToAllPlayer(DataType dataType, int id)
+    {
         sendToAllPlayers(getWriterForType(dataType, id));
     }
 
-    private void sendDataToAllPlayersExcept(DataType dataType, int id, EntityPlayer ignored) {
+    private void sendDataToAllPlayersExcept(DataType dataType, int id, EntityPlayer ignored)
+    {
         sendToAllPlayersExcept(getWriterForType(dataType, id), ignored);
     }
 
-    private void sendToAllPlayers(DataWriter dw) {
+    private void sendToAllPlayers(DataWriter dw)
+    {
         sendToAllPlayersExcept(dw, null);
     }
 
-    private void sendToAllPlayersExcept(DataWriter dw, EntityPlayer ignored) {
-        for (EntityPlayer player : players) {
-            if (!player.equals(ignored)) {
+    private void sendToAllPlayersExcept(DataWriter dw, EntityPlayer ignored)
+    {
+        for (EntityPlayer player : players)
+        {
+            if (!player.equals(ignored))
+            {
                 PacketHandler.sendToPlayer(dw, player);
             }
         }
     }
 
-    public void removePlayer(EntityPlayer player) {
-        if (!players.remove(player)) {
+    public void removePlayer(EntityPlayer player)
+    {
+        if (!players.remove(player))
+        {
             System.err.println("Trying to remove non-listening player: " + player.toString());
         }
     }
 
-    public void updateServer(DataType dataType) {
+    public void updateServer(DataType dataType)
+    {
         updateServer(dataType, 0);
     }
 
-    public void updateServer(DataType dataType, int id) {
+    public void updateServer(DataType dataType, int id)
+    {
         PacketHandler.sendToServer(getWriterForType(dataType, id));
     }
 
-    private DataWriter getWriterForType(DataType dataType, int id) {
+    private DataWriter getWriterForType(DataType dataType, int id)
+    {
         DataWriter dw = PacketHandler.getWriter(this, PacketId.TYPE);
         dw.writeEnum(dataType);
         dataType.save(this, dw, id);
@@ -256,15 +292,19 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         return dw;
     }
 
-    public void receiveServerPacket(DataReader dr, PacketId id, EntityPlayer player) {
-        switch (id) {
+    public void receiveServerPacket(DataReader dr, PacketId id, EntityPlayer player)
+    {
+        switch (id)
+        {
             case TYPE:
                 DataType dataType = dr.readEnum(DataType.class);
                 int index = dataType.load(this, dr, false);
-                if (index != -1 && dataType.shouldBounce(this)) {
+                if (index != -1 && dataType.shouldBounce(this))
+                {
                     sendDataToAllPlayersExcept(dataType, index, dataType.shouldBounceToAll(this) ? null : player);
                 }
-                if (dataType == DataType.SIDE_ENABLED) {
+                if (dataType == DataType.SIDE_ENABLED)
+                {
                     onSideChange();
                 }
                 markDirty();
@@ -281,10 +321,13 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         }
     }
 
-    public void receiveClientPacket(DataReader dr, PacketId id) {
-        switch (id) {
+    public void receiveClientPacket(DataReader dr, PacketId id)
+    {
+        switch (id)
+        {
             case ALL:
-                for (DataType dataType : DataType.values()) {
+                for (DataType dataType : DataType.values())
+                {
                     dataType.load(this, dr, true);
                 }
                 onUpgradeChange();
@@ -292,7 +335,8 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
             case TYPE:
                 DataType dataType = dr.readEnum(DataType.class);
                 dataType.load(this, dr, false);
-                if (dataType == DataType.SIDE_ENABLED) {
+                if (dataType == DataType.SIDE_ENABLED)
+                {
                     onSideChange();
                 }
                 break;
@@ -311,14 +355,18 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     private int slotTick = 0;
     private static final int SLOT_DELAY = 10;
 
-    public void updateEntity() {
-        for (Page page : pages) {
+    public void updateEntity()
+    {
+        for (Page page : pages)
+        {
             page.onUpdate();
         }
 
-        if (!worldObj.isRemote && ++fuelTick >= FUEL_DELAY) {
+        if (!worldObj.isRemote && ++fuelTick >= FUEL_DELAY)
+        {
             lit = worldObj.getLight(pos) == 15;
-            if (lastLit != lit) {
+            if (lastLit != lit)
+            {
                 lastLit = lit;
                 sendDataToAllPlayer(DataType.LIT);
             }
@@ -327,11 +375,14 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         }
 
 
-        if (!worldObj.isRemote && ++moveTick >= MOVE_DELAY) {
+        if (!worldObj.isRemote && ++moveTick >= MOVE_DELAY)
+        {
             moveTick = 0;
-            if (getUpgradePage().hasGlobalUpgrade(Upgrade.AUTO_TRANSFER)) {
-                int transferSize = (int)Math.pow(2, getUpgradePage().getGlobalUpgradeCount(Upgrade.TRANSFER));
-                for (Setting setting : getTransferPage().getSettings()) {
+            if (getUpgradePage().hasGlobalUpgrade(Upgrade.AUTO_TRANSFER))
+            {
+                int transferSize = (int) Math.pow(2, getUpgradePage().getGlobalUpgradeCount(Upgrade.TRANSFER));
+                for (Setting setting : getTransferPage().getSettings())
+                {
 //                    for (Side side : setting.getSides()) {
 //                        transfer(setting, side, side.getInput(), transferSize);
 //                        transfer(setting, side, side.getOutput(), transferSize);
@@ -340,9 +391,11 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
             }
         }
 
-        if (!worldObj.isRemote && ++slotTick >= SLOT_DELAY) {
+        if (!worldObj.isRemote && ++slotTick >= SLOT_DELAY)
+        {
             slotTick = 0;
-            for (SlotBase slot : slots) {
+            for (SlotBase slot : slots)
+            {
                 slot.updateServer();
             }
         }
@@ -483,15 +536,20 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
 
     private int lastPower;
     private int lastLava;
-    private void reloadFuel() {
 
-        if (isLitAndCanSeeTheSky()) {
+    private void reloadFuel()
+    {
+
+        if (isLitAndCanSeeTheSky())
+        {
             power += SOLAR_GENERATION * getUpgradePage().getGlobalUpgradeCount(Upgrade.SOLAR);
         }
 
-        if (getUpgradePage().hasGlobalUpgrade(Upgrade.LAVA)) {
+        if (getUpgradePage().hasGlobalUpgrade(Upgrade.LAVA))
+        {
             int space = (MAX_POWER - power) / LAVA_EFFICIENCY;
-            if (space > 0) {
+            if (space > 0)
+            {
                 int move = Math.max(0, Math.min(MAX_LAVA_DRAIN, Math.min(space, lava)));
                 power += move * LAVA_EFFICIENCY;
                 lava -= move;
@@ -499,78 +557,99 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         }
 
         ItemStack fuel = fuelSlot.getStack();
-        if (fuel != null && fuelSlot.isItemValid(fuel)) {
+        if (fuel != null && fuelSlot.isItemValid(fuel))
+        {
             int fuelLevel = TileEntityFurnace.getItemBurnTime(fuel);
             fuelLevel *= 1 + getUpgradePage().getGlobalUpgradeCount(Upgrade.EFFICIENCY) / 4F;
 
-            if (fuelLevel > 0 && fuelLevel + power <= MAX_POWER) {
+            if (fuelLevel > 0 && fuelLevel + power <= MAX_POWER)
+            {
                 power += fuelLevel;
-                if (fuel.getItem().hasContainerItem(fuel)) {
+                if (fuel.getItem().hasContainerItem(fuel))
+                {
                     fuelSlot.putStack(fuel.getItem().getContainerItem(fuel).copy());
-                }else{
+                } else
+                {
                     decrStackSize(fuelSlot.getSlotIndex(), 1);
                 }
             }
         }
 
-        if (power > MAX_POWER) {
+        if (power > MAX_POWER)
+        {
             power = MAX_POWER;
         }
 
-        if (power != lastPower) {
+        if (power != lastPower)
+        {
             lastPower = power;
             sendDataToAllPlayer(DataType.POWER);
         }
 
-        if (lava != lastLava) {
+        if (lava != lastLava)
+        {
             lastLava = lava;
             sendDataToAllPlayer(DataType.LAVA);
         }
     }
 
-    public boolean isLitAndCanSeeTheSky() {
-        return lit &&  worldObj.canBlockSeeSky(getPos());
+    public boolean isLitAndCanSeeTheSky()
+    {
+        return lit && worldObj.canBlockSeeSky(getPos());
     }
 
 
-    public void onUpgradeChangeDistribute() {
-        if (!worldObj.isRemote) {
+    public void onUpgradeChangeDistribute()
+    {
+        if (!worldObj.isRemote)
+        {
             onUpgradeChange();
             sendToAllPlayers(PacketHandler.getWriter(this, PacketId.UPGRADE_CHANGE));
-        }else{
+        } else
+        {
             getUpgradePage().onUpgradeChange();
         }
     }
 
-    public void onUpgradeChange() {
+    public void onUpgradeChange()
+    {
         reloadTransferSides();
         getUpgradePage().onUpgradeChange();
-        for (UnitCrafting crafting : getMainPage().getCraftingList()) {
+        for (UnitCrafting crafting : getMainPage().getCraftingList())
+        {
             crafting.onUpgradeChange();
         }
     }
 
-    public void onSideChange() {
+    public void onSideChange()
+    {
         reloadTransferSides();
     }
 
-    private void reloadTransferSides() {
-        for (int i = 0; i < sideSlots.length; i++) {
-            for (SlotBase slot : slots) {
+    private void reloadTransferSides()
+    {
+        for (int i = 0; i < sideSlots.length; i++)
+        {
+            for (SlotBase slot : slots)
+            {
                 slot.resetValidity(i);
             }
 
             List<SlotBase> slotsForSide = new ArrayList<SlotBase>();
 
-            for (Setting setting : getTransferPage().getSettings()) {
+            for (Setting setting : getTransferPage().getSettings())
+            {
                 Transfer input = setting.getSides().get(i).getInput();
                 Transfer output = setting.getSides().get(i).getOutput();
 
-                if (input.isEnabled() || output.isEnabled()) {
+                if (input.isEnabled() || output.isEnabled())
+                {
                     List<SlotBase> unitSlots = setting.getSlots();
-                    if (unitSlots != null) {
+                    if (unitSlots != null)
+                    {
                         slotsForSide.addAll(unitSlots);
-                        for (SlotBase unitSlot : unitSlots) {
+                        for (SlotBase unitSlot : unitSlots)
+                        {
                             boolean isSlotInput = input.isEnabled() && unitSlot.canAcceptItems();
                             boolean isSlotOutput = output.isEnabled() && unitSlot.canSupplyItems();
 
@@ -585,9 +664,11 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         }
     }
 
-    private int[] getSlotIndexArray(List<SlotBase> slots) {
+    private int[] getSlotIndexArray(List<SlotBase> slots)
+    {
         int[] result = new int[slots.size()];
-        for (int j = 0; j < slots.size(); j++) {
+        for (int j = 0; j < slots.size(); j++)
+        {
             result[j] = slots.get(j).getSlotIndex();
         }
         return result;
@@ -597,7 +678,8 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     private int[][] sideSlots = new int[6][];
 
     @Override
-    public boolean isItemValidForSlot(int id, ItemStack item) {
+    public boolean isItemValidForSlot(int id, ItemStack item)
+    {
         return slots.get(id).isItemValid(item);
     }
 
@@ -631,27 +713,31 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
 //    }
 
 
-    private int getTransferSide(int side) {
+    private int getTransferSide(int side)
+    {
         return BlockTable.getSideFromSideAndMeta(side, getBlockMetadata());
     }
 
-    public GuiMenu getMenu() {
+    public GuiMenu getMenu()
+    {
         return menu;
     }
 
-    public void setMenu(GuiMenuItem menu) {
+    public void setMenu(GuiMenuItem menu)
+    {
         this.menu = menu;
     }
 
 
-
-
     @Override
-    public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
-        if (resource != null && resource.getFluid() != null && resource.getFluid().equals(FluidRegistry.LAVA)) {
+    public int fill(EnumFacing from, FluidStack resource, boolean doFill)
+    {
+        if (resource != null && resource.getFluid() != null && resource.getFluid().equals(FluidRegistry.LAVA))
+        {
             int space = MAX_LAVA - lava;
             int fill = Math.min(space, resource.amount);
-            if (doFill) {
+            if (doFill)
+            {
                 lava += fill;
             }
 
@@ -662,18 +748,23 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     @Override
-    public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
-        if (resource != null && resource.getFluid() != null && resource.getFluid().equals(FluidRegistry.LAVA)) {
+    public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain)
+    {
+        if (resource != null && resource.getFluid() != null && resource.getFluid().equals(FluidRegistry.LAVA))
+        {
             return drain(from, resource.amount, doDrain);
-        }else{
+        } else
+        {
             return null;
         }
     }
 
     @Override
-    public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
+    public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain)
+    {
         int drain = Math.min(maxDrain, lava);
-        if (doDrain) {
+        if (doDrain)
+        {
             lava -= drain;
         }
 
@@ -681,33 +772,40 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     @Override
-    public boolean canFill(EnumFacing from, Fluid fluid) {
+    public boolean canFill(EnumFacing from, Fluid fluid)
+    {
         return fluid != null && fluid.equals(FluidRegistry.LAVA);
     }
 
     @Override
-    public boolean canDrain(EnumFacing from, Fluid fluid) {
+    public boolean canDrain(EnumFacing from, Fluid fluid)
+    {
         return fluid != null && fluid.equals(FluidRegistry.LAVA);
     }
 
     @Override
-    public FluidTankInfo[] getTankInfo(EnumFacing from) {
-        return new FluidTankInfo[] {new FluidTankInfo(new FluidStack(FluidRegistry.LAVA, lava), MAX_LAVA)};
+    public FluidTankInfo[] getTankInfo(EnumFacing from)
+    {
+        return new FluidTankInfo[]{new FluidTankInfo(new FluidStack(FluidRegistry.LAVA, lava), MAX_LAVA)};
     }
 
-    public int getLava() {
+    public int getLava()
+    {
         return lava;
     }
 
-    public void setLava(int lava) {
+    public void setLava(int lava)
+    {
         this.lava = lava;
     }
 
-    public boolean isLit() {
+    public boolean isLit()
+    {
         return lit;
     }
 
-    public void setLit(boolean lit) {
+    public void setLit(boolean lit)
+    {
         this.lit = lit;
     }
 
@@ -780,27 +878,32 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
+    public void readFromNBT(NBTTagCompound compound)
+    {
         super.readFromNBT(compound);
 
         items = new ItemStack[getSizeInventory()];
 
         NBTTagList itemList = compound.getTagList(NBT_ITEMS, COMPOUND_ID);
-        for (int i = 0; i < itemList.tagCount(); i++) {
+        for (int i = 0; i < itemList.tagCount(); i++)
+        {
             NBTTagCompound slotCompound = itemList.getCompoundTagAt(i);
             int id = slotCompound.getByte(NBT_SLOT);
-            if (id < 0) {
+            if (id < 0)
+            {
                 id += 256;
             }
 
-            if (id >= 0 && id < items.length) {
+            if (id >= 0 && id < items.length)
+            {
                 items[id] = ItemStack.loadItemStackFromNBT(slotCompound);
             }
         }
 
         NBTTagList unitList = compound.getTagList(NBT_UNITS, COMPOUND_ID);
         List<Unit> units = getMainPage().getUnits();
-        for (int i = 0; i < units.size(); i++) {
+        for (int i = 0; i < units.size(); i++)
+        {
             Unit unit = units.get(i);
             NBTTagCompound unitCompound = unitList.getCompoundTagAt(i);
             unit.readFromNBT(unitCompound);
@@ -809,12 +912,14 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
 
         NBTTagList settingList = compound.getTagList(NBT_SETTINGS, COMPOUND_ID);
         List<Setting> settings = getTransferPage().getSettings();
-        for (int i = 0; i < settings.size(); i++) {
+        for (int i = 0; i < settings.size(); i++)
+        {
             Setting setting = settings.get(i);
             NBTTagCompound settingCompound = settingList.getCompoundTagAt(i);
             NBTTagList sideList = settingCompound.getTagList(NBT_SIDES, COMPOUND_ID);
             List<Side> sides = setting.getSides();
-            for (int j = 0; j < sides.size(); j++) {
+            for (int j = 0; j < sides.size(); j++)
+            {
                 Side side = sides.get(j);
                 NBTTagCompound sideCompound = sideList.getCompoundTagAt(j);
                 NBTTagCompound inputCompound = sideCompound.getCompoundTag(NBT_INPUT);
@@ -831,7 +936,8 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         onUpgradeChange();
     }
 
-    public void spitOutItem(ItemStack item) {
+    public void spitOutItem(ItemStack item)
+    {
         float offsetX = worldObj.rand.nextFloat() * 0.8F + 0.1F;
         float offsetY = worldObj.rand.nextFloat() * 0.8F + 0.1F;
         float offsetZ = worldObj.rand.nextFloat() * 0.8F + 0.1F;
@@ -845,22 +951,28 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     private static final IBitCount GRID_ID_BITS = new LengthCount(4);
-    public void clearGridSend(int id) {
+
+    public void clearGridSend(int id)
+    {
         DataWriter dw = PacketHandler.getWriter(this, PacketId.CLEAR);
         dw.writeData(id, GRID_ID_BITS);
         PacketHandler.sendToServer(dw);
     }
 
-    private void clearGrid(EntityPlayer player, int id) {
+    private void clearGrid(EntityPlayer player, int id)
+    {
 
         UnitCrafting crafting = getMainPage().getCraftingList().get(id);
-        if (crafting.isEnabled()) {
+        if (crafting.isEnabled())
+        {
             int[] from = new int[9];
-            for (int i = 0; i < from.length; i++) {
+            for (int i = 0; i < from.length; i++)
+            {
                 from[i] = crafting.getGridId() + i;
             }
             int[] to = new int[player.inventory.mainInventory.length];
-            for (int i = 0; i < to.length; i++) {
+            for (int i = 0; i < to.length; i++)
+            {
                 to[i] = i;
             }
 

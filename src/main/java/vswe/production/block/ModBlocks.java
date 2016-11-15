@@ -6,7 +6,8 @@ import vswe.production.creativetab.CreativeTabProduction;
 import vswe.production.item.Upgrade;
 import vswe.production.tileentity.TileEntityTable;
 
-public final class ModBlocks {
+public final class ModBlocks
+{
     public static BlockTable table;
 
     private static final String UNLOCALIZED_NAME = "production_table";
@@ -15,7 +16,8 @@ public final class ModBlocks {
     private static final String PLANKS = "plankWood";
     private static final String COBBLE = "cobblestone";
 
-    public static void init() {
+    public static void init()
+    {
         table = new BlockTable();
         GameRegistry.registerBlock(table, UNLOCALIZED_NAME);
         GameRegistry.registerTileEntity(TileEntityTable.class, UNLOCALIZED_NAME);
@@ -25,5 +27,7 @@ public final class ModBlocks {
         GameRegistry.addRecipe(new ShapedOreRecipe(table, "PPP", "CUC", "CCC", 'P', PLANKS, 'C', COBBLE, 'U', Upgrade.BLANK.getItemStack()));
     }
 
-    private ModBlocks(){}
+    private ModBlocks()
+    {
+    }
 }

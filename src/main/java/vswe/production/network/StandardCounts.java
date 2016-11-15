@@ -1,6 +1,7 @@
 package vswe.production.network;
 
-public enum StandardCounts implements IBitCount {
+public enum StandardCounts implements IBitCount
+{
     BOOLEAN(1),
     BYTE(8),
     SHORT(16),
@@ -10,12 +11,14 @@ public enum StandardCounts implements IBitCount {
 
     private int bitCount;
 
-    StandardCounts(int bitCount) {
+    StandardCounts(int bitCount)
+    {
         this.bitCount = bitCount;
     }
 
     @Override
-    public int getBitCount() {
+    public int getBitCount()
+    {
         return bitCount;
     }
 }

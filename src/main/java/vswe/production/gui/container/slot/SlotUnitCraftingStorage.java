@@ -7,43 +7,52 @@ import vswe.production.page.unit.UnitCrafting;
 import vswe.production.tileentity.TileEntityTable;
 
 
-public class SlotUnitCraftingStorage extends SlotUnit {
-    public SlotUnitCraftingStorage(TileEntityTable table, Page page, int id, int x, int y, Unit unit) {
+public class SlotUnitCraftingStorage extends SlotUnit
+{
+    public SlotUnitCraftingStorage(TileEntityTable table, Page page, int id, int x, int y, Unit unit)
+    {
         super(table, page, id, x, y, unit);
     }
 
     @Override
-    public boolean isVisible() {
+    public boolean isVisible()
+    {
         return isAvailable() && super.isVisible();
     }
 
     @Override
-    public boolean isEnabled() {
+    public boolean isEnabled()
+    {
         return isAvailable() && super.isEnabled();
     }
 
-    private boolean isAvailable() {
+    private boolean isAvailable()
+    {
         return table.getUpgradePage().hasUpgrade(unit.getId(), Upgrade.STORAGE);
     }
 
     @Override
-    public boolean canAcceptItems() {
+    public boolean canAcceptItems()
+    {
         return true;
     }
 
     @Override
-    public boolean shouldSlotHighlightItems() {
+    public boolean shouldSlotHighlightItems()
+    {
         return false;
     }
 
     @Override
-    public boolean shouldSlotHighlightSelf() {
+    public boolean shouldSlotHighlightSelf()
+    {
         return false;
     }
 
     @Override
-    public void onSlotChanged() {
+    public void onSlotChanged()
+    {
         super.onSlotChanged();
-        ((UnitCrafting)unit).onGridChanged();
+        ((UnitCrafting) unit).onGridChanged();
     }
 }

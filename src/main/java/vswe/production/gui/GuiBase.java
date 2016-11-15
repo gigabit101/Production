@@ -16,8 +16,10 @@ import java.util.Collections;
 import java.util.List;
 
 
-public abstract class GuiBase extends GuiContainer {
-    public GuiBase(Container container) {
+public abstract class GuiBase extends GuiContainer
+{
+    public GuiBase(Container container)
+    {
         super(container);
     }
 
@@ -25,12 +27,15 @@ public abstract class GuiBase extends GuiContainer {
     public boolean shiftMoveRendered;
 
     @Override
-    public void drawScreen(int x, int y, float f) {
+    public void drawScreen(int x, int y, float f)
+    {
         selectedSlot = null;
         shiftMoveRendered = false;
-        for (Object obj : inventorySlots.inventorySlots) {
-            SlotBase slot = (SlotBase)obj;
-            if (inBounds(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, x, y)) {
+        for (Object obj : inventorySlots.inventorySlots)
+        {
+            SlotBase slot = (SlotBase) obj;
+            if (inBounds(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, x, y))
+            {
                 selectedSlot = slot;
                 break;
             }
@@ -40,44 +45,52 @@ public abstract class GuiBase extends GuiContainer {
         super.drawScreen(x, y, f);
     }
 
-    public SlotBase getSelectedSlot() {
+    public SlotBase getSelectedSlot()
+    {
         return selectedSlot;
     }
 
     protected static final ResourceLocation BACKGROUND = new ResourceLocation("production", "textures/gui/background.png");
     protected static final ResourceLocation ELEMENTS = new ResourceLocation("production", "textures/gui/elements.png");
 
-    public void prepare() {
+    public void prepare()
+    {
         mc.getTextureManager().bindTexture(ELEMENTS);
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glDisable(GL11.GL_LIGHTING);
     }
 
-    public boolean inBounds(int x, int y, int w, int h, int mX, int mY) {
+    public boolean inBounds(int x, int y, int w, int h, int mX, int mY)
+    {
         return x <= mX && mX < x + w && y <= mY && mY < y + h;
     }
 
-    public void drawRect(int x, int y, int u, int v, int w, int h) {
+    public void drawRect(int x, int y, int u, int v, int w, int h)
+    {
         drawTexturedModalRect(x, y, u, v, w, h);
     }
 
-    public void drawString(String str, int x, int y, int color) {
+    public void drawString(String str, int x, int y, int color)
+    {
         drawString(str, x, y, 1F, color);
     }
 
-    public void drawString(String str, int x, int y, float multiplier, int color) {
+    public void drawString(String str, int x, int y, float multiplier, int color)
+    {
         GL11.glPushMatrix();
         GL11.glScalef(multiplier, multiplier, 1F);
-        fontRendererObj.drawString(str, (int)(x / multiplier), (int)(y / multiplier), color);
+        fontRendererObj.drawString(str, (int) (x / multiplier), (int) (y / multiplier), color);
 
         GL11.glPopMatrix();
     }
 
-    public void drawCenteredString(String str, int x, int y, int width, float multiplier, int color) {
-        drawString(str, x + (width - (int)(fontRendererObj.getStringWidth(str) * multiplier)) / 2, y, multiplier, color);
+    public void drawCenteredString(String str, int x, int y, int width, float multiplier, int color)
+    {
+        drawString(str, x + (width - (int) (fontRendererObj.getStringWidth(str) * multiplier)) / 2, y, multiplier, color);
     }
 
-    public void drawItem(ItemStack item, int x, int y) {
+    public void drawItem(ItemStack item, int x, int y)
+    {
         RenderHelper.enableGUIStandardItemLighting();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
@@ -120,7 +133,8 @@ public abstract class GuiBase extends GuiContainer {
     private static final int ITEM_SRC_Y = 62;
     private static final int ITEM_ITEM_OFFSET = 1;
 
-    public void drawItemWithBackground(ItemStack item, int x, int y, int mX, int mY) {
+    public void drawItemWithBackground(ItemStack item, int x, int y, int mX, int mY)
+    {
         boolean hover = inBounds(x, y, ITEM_SIZE, ITEM_SIZE, mX, mY);
         int textureIndexX = hover ? 1 : 0;
         int textureIndexY = item != null ? 1 : 0;
@@ -129,16 +143,19 @@ public abstract class GuiBase extends GuiContainer {
         drawRect(x, y, ITEM_SRC_X + textureIndexX * ITEM_SIZE, ITEM_SRC_Y + textureIndexY * ITEM_SIZE, ITEM_SIZE, ITEM_SIZE);
         drawItem(item, x + ITEM_ITEM_OFFSET, y + ITEM_ITEM_OFFSET);
 
-        if (hover) {
+        if (hover)
+        {
             drawMouseOver(getItemDescription(item));
         }
     }
 
-    public int getStringWidth(String str) {
+    public int getStringWidth(String str)
+    {
         return fontRendererObj.getStringWidth(str);
     }
 
-    public void drawCursor(int x, int y, int z, float size, int color) {
+    public void drawCursor(int x, int y, int z, float size, int color)
+    {
         GL11.glPushMatrix();
         GL11.glTranslatef(x, y, z);
         GL11.glScalef(size, size, 0);
@@ -147,8 +164,10 @@ public abstract class GuiBase extends GuiContainer {
         GL11.glPopMatrix();
     }
 
-    public void drawMouseOver(String str) {
-        if (str == null) {
+    public void drawMouseOver(String str)
+    {
+        if (str == null)
+        {
             return;
         }
 
@@ -157,32 +176,40 @@ public abstract class GuiBase extends GuiContainer {
         drawMouseOver(lst);
     }
 
-    public void drawMouseOver(List<String> str) {
+    public void drawMouseOver(List<String> str)
+    {
         this.mouseOver = str;
     }
 
     private List<String> mouseOver;
-    public void clearMouseOverCache() {
+
+    public void clearMouseOverCache()
+    {
         mouseOver = null;
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int mX, int mY) {
+    protected void drawGuiContainerForegroundLayer(int mX, int mY)
+    {
         drawCachedMouseOver(mX - guiLeft, mY - guiTop);
     }
 
-    public void drawCachedMouseOver(int x, int y) {
-        if (mouseOver == null || mouseOver.isEmpty()) {
+    public void drawCachedMouseOver(int x, int y)
+    {
+        if (mouseOver == null || mouseOver.isEmpty())
+        {
             return;
         }
 
 
         int w = 0;
 
-        for (String line : mouseOver) {
+        for (String line : mouseOver)
+        {
             int l = fontRendererObj.getStringWidth(line);
 
-            if (l > w) {
+            if (l > w)
+            {
                 w = l;
             }
         }
@@ -191,15 +218,18 @@ public abstract class GuiBase extends GuiContainer {
         y -= 12;
         int h = 8;
 
-        if (mouseOver.size() > 1){
+        if (mouseOver.size() > 1)
+        {
             h += 2 + (mouseOver.size() - 1) * 10;
         }
 
-        if (guiLeft + x + w > this.width) {
+        if (guiLeft + x + w > this.width)
+        {
             x -= 28 + w;
         }
 
-        if (guiTop + y + h + 6 > this.height) {
+        if (guiTop + y + h + 6 > this.height)
+        {
             y = this.height - h - 6 - guiTop;
         }
 
@@ -219,11 +249,13 @@ public abstract class GuiBase extends GuiContainer {
         this.drawGradientRect(x - 3, y - 3, x + w + 3, y - 3 + 1, border1, border1);
         this.drawGradientRect(x - 3, y + h + 2, x + w + 3, y + h + 3, border2, border2);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-        for (int i = 0; i < mouseOver.size(); i++) {
+        for (int i = 0; i < mouseOver.size(); i++)
+        {
             String line = mouseOver.get(i);
             fontRendererObj.drawStringWithShadow(line, x, y, -1);
 
-            if (i == 0) {
+            if (i == 0)
+            {
                 y += 2;
             }
 
@@ -236,28 +268,36 @@ public abstract class GuiBase extends GuiContainer {
         GL11.glColor4f(1F, 1F, 1F, 1F);
     }
 
-    public String getItemName(ItemStack item) {
-        if (item == null || item.getItem() == null) {
+    public String getItemName(ItemStack item)
+    {
+        if (item == null || item.getItem() == null)
+        {
             return null;
         }
 
-        try {
+        try
+        {
             //noinspection unchecked
             return item.getDisplayName();
-        }catch (Throwable ignored) {
+        } catch (Throwable ignored)
+        {
             return null;
         }
     }
 
-    public List<String> getItemDescription(ItemStack item) {
-        if (item == null || item.getItem() == null) {
+    public List<String> getItemDescription(ItemStack item)
+    {
+        if (item == null || item.getItem() == null)
+        {
             return null;
         }
 
-        try {
+        try
+        {
             //noinspection unchecked
             return item.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
-        }catch (Throwable ignored) {
+        } catch (Throwable ignored)
+        {
             return null;
         }
     }

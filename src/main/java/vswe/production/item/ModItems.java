@@ -4,7 +4,8 @@ import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-public final class ModItems {
+public final class ModItems
+{
     public static ItemUpgrade upgrade;
 
     private static final String UNLOCALIZED_NAME = "production_table_upgrade";
@@ -20,7 +21,8 @@ public final class ModItems {
     private static final String GOLD = "ingotGold";
     private static final String REDSTONE_BLOCK = "blockRedstone";
 
-    public static void init() {
+    public static void init()
+    {
         upgrade = new ItemUpgrade();
         upgrade.setUnlocalizedName(UNLOCALIZED_NAME);
         GameRegistry.registerItem(upgrade, UNLOCALIZED_NAME);
@@ -40,11 +42,15 @@ public final class ModItems {
 
     }
 
-    private static void addRecipe(Upgrade upgrade, Object ... recipe) {
-        if (upgrade.isEnabled()) {
+    private static void addRecipe(Upgrade upgrade, Object... recipe)
+    {
+        if (upgrade.isEnabled())
+        {
             GameRegistry.addRecipe(new ShapedOreRecipe(upgrade.getItemStack(), recipe));
         }
     }
 
-    private ModItems() {}
+    private ModItems()
+    {
+    }
 }

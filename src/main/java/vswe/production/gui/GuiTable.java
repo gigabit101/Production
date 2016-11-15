@@ -9,26 +9,29 @@ import vswe.production.gui.container.slot.SlotBase;
 import vswe.production.item.Upgrade;
 import vswe.production.network.PacketHandler;
 import vswe.production.network.PacketId;
+import vswe.production.network.data.DataType;
 import vswe.production.page.Page;
 import vswe.production.tileentity.TileEntityTable;
-import vswe.production.network.data.DataType;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiTable extends GuiBase {
+public class GuiTable extends GuiBase
+{
 
     private TileEntityTable table;
     private List<SlotBase> slots;
 
-    public GuiTable(TileEntityTable table, EntityPlayer player) {
+    public GuiTable(TileEntityTable table, EntityPlayer player)
+    {
         super(new ContainerTable(table, player));
         xSize = 256;
         ySize = 256;
         slots = new ArrayList<SlotBase>();
-        for (Object obj : inventorySlots.inventorySlots){
-            SlotBase slot = (SlotBase)obj;
+        for (Object obj : inventorySlots.inventorySlots)
+        {
+            SlotBase slot = (SlotBase) obj;
             slots.add(slot);
 
             slot.updateClient(slot.isVisible());
@@ -37,7 +40,8 @@ public class GuiTable extends GuiBase {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float f, int mX, int mY) {
+    protected void drawGuiContainerBackgroundLayer(float f, int mX, int mY)
+    {
         GL11.glPushMatrix();
         GL11.glTranslatef(guiLeft, guiTop, 0);
         mX -= guiLeft;
@@ -47,11 +51,13 @@ public class GuiTable extends GuiBase {
         drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
 
         drawSlots();
-        if (table.getMenu() == null) {
+        if (table.getMenu() == null)
+        {
             drawPageHeaders(mX, mY);
             drawPower(mX, mY);
             table.getSelectedPage().draw(this, mX, mY);
-        }else{
+        } else
+        {
             table.getMenu().draw(this, mX, mY);
         }
 
@@ -66,9 +72,11 @@ public class GuiTable extends GuiBase {
         mouseY -= guiTop;
 
 
-        if (table.getMenu() == null) {
+        if (table.getMenu() == null)
+        {
             table.getSelectedPage().onRelease(this, mouseX, mouseY, clickedMouseButton);
-        }else{
+        } else
+        {
             table.getMenu().onRelease(this, mouseX, mouseY);
         }
     }
@@ -80,10 +88,12 @@ public class GuiTable extends GuiBase {
         mouseX -= guiLeft;
         mouseY -= guiTop;
 
-        if (table.getMenu() == null) {
+        if (table.getMenu() == null)
+        {
             clickPageHeader(mouseX, mouseY);
             table.getSelectedPage().onClick(this, mouseX, mouseY, mouseButton);
-        }else{
+        } else
+        {
             table.getMenu().onClick(this, mouseX, mouseY);
         }
     }
@@ -119,8 +129,10 @@ public class GuiTable extends GuiBase {
 //    }
 
     @Override
-    protected void keyTyped(char c, int k) {
-        if (table.getMenu() == null) {
+    protected void keyTyped(char c, int k)
+    {
+        if (table.getMenu() == null)
+        {
             try
             {
                 super.keyTyped(c, k);
@@ -128,10 +140,13 @@ public class GuiTable extends GuiBase {
             {
                 e.printStackTrace();
             }
-        }else{
-            if (k == 1) {
+        } else
+        {
+            if (k == 1)
+            {
                 this.mc.thePlayer.closeScreen();
-            }else{
+            } else
+            {
                 table.getMenu().onKeyStroke(this, c, k);
             }
         }
@@ -146,8 +161,10 @@ public class GuiTable extends GuiBase {
     private static final int HEADER_Y = 173;
     private static final int HEADER_TEXT_Y = 7;
 
-    private void drawPageHeaders(int mX, int mY) {
-        for (int i = 0; i < table.getPages().size(); i++) {
+    private void drawPageHeaders(int mX, int mY)
+    {
+        for (int i = 0; i < table.getPages().size(); i++)
+        {
             Page page = table.getPages().get(i);
 
             boolean selected = page.equals(table.getSelectedPage());
@@ -167,11 +184,14 @@ public class GuiTable extends GuiBase {
         }
     }
 
-    private void clickPageHeader(int mX, int mY) {
-        for (int i = 0; i < table.getPages().size(); i++) {
+    private void clickPageHeader(int mX, int mY)
+    {
+        for (int i = 0; i < table.getPages().size(); i++)
+        {
             Page page = table.getPages().get(i);
             int y = HEADER_Y + HEADER_HEIGHT * i;
-            if (inBounds(HEADER_X, y, HEADER_FULL_WIDTH, HEADER_HEIGHT, mX, mY)) {
+            if (inBounds(HEADER_X, y, HEADER_FULL_WIDTH, HEADER_HEIGHT, mX, mY))
+            {
                 table.setSelectedPage(page);
                 table.updateServer(DataType.PAGE);
                 break;
@@ -186,12 +206,16 @@ public class GuiTable extends GuiBase {
     private static final int SLOT_OFFSET = -1;
     private static final int SLOT_BIG_SIZE = 26;
     private static final int SLOT_BIG_OFFSET = SLOT_OFFSET - (SLOT_BIG_SIZE - SLOT_SIZE) / 2;
-    private void drawSlots() {
+
+    private void drawSlots()
+    {
         prepare();
-        for (SlotBase slot : slots) {
+        for (SlotBase slot : slots)
+        {
             boolean visible = slot.isVisible();
             slot.updateClient(visible);
-            if (visible) {
+            if (visible)
+            {
                 boolean isBig = slot.isBig();
                 int srcY = isBig ? SLOT_SIZE + SLOT_SRC_Y : SLOT_SRC_Y;
                 int size = isBig ? SLOT_BIG_SIZE : SLOT_SIZE;
@@ -218,7 +242,8 @@ public class GuiTable extends GuiBase {
     private static final int POWER_INNER_OFFSET_X = (POWER_WIDTH - POWER_INNER_WIDTH) / 2;
     private static final int POWER_INNER_OFFSET_Y = (POWER_HEIGHT - POWER_INNER_HEIGHT) / 2;
 
-    private void drawPower(int mX, int mY) {
+    private void drawPower(int mX, int mY)
+    {
         prepare();
         drawRect(POWER_X + POWER_INNER_OFFSET_X, POWER_Y + POWER_INNER_OFFSET_Y, POWER_INNER_SRC_X + POWER_INNER_WIDTH, POWER_INNER_SRC_Y, POWER_INNER_WIDTH, POWER_INNER_HEIGHT);
 
@@ -229,30 +254,37 @@ public class GuiTable extends GuiBase {
 
         int srcX = POWER_SRC_X;
         boolean hover = inBounds(POWER_X, POWER_Y, POWER_WIDTH, POWER_HEIGHT, mX, mY);
-        if (hover) {
+        if (hover)
+        {
             srcX += POWER_WIDTH;
         }
         drawRect(POWER_X, POWER_Y, srcX, POWER_SRC_Y, POWER_WIDTH, POWER_HEIGHT);
 
-        if (hover) {
+        if (hover)
+        {
             String str = "Power: " + formatNumber(table.getPower()) + "/" + formatNumber(TileEntityTable.MAX_POWER);
-            if (table.getLava() > 0 && table.getUpgradePage().hasGlobalUpgrade(Upgrade.LAVA)) {
+            if (table.getLava() > 0 && table.getUpgradePage().hasGlobalUpgrade(Upgrade.LAVA))
+            {
                 str += "\n" + TextFormatting.GOLD + "Lava: " + formatNumber(table.getLava()) + "/" + formatNumber(TileEntityTable.MAX_LAVA);
             }
-            if (table.getUpgradePage().hasGlobalUpgrade(Upgrade.SOLAR)) {
+            if (table.getUpgradePage().hasGlobalUpgrade(Upgrade.SOLAR))
+            {
                 str += "\n" + TextFormatting.YELLOW + "Solar panel: " + (table.isLitAndCanSeeTheSky() ? "Lit" : TextFormatting.GRAY + "Dark");
             }
             drawMouseOver(str);
         }
     }
 
-    private String formatNumber(int number) {
-        return String.format("%,d", number).replace((char)160,(char)32);
+    private String formatNumber(int number)
+    {
+        return String.format("%,d", number).replace((char) 160, (char) 32);
     }
 
     private boolean closed;
+
     @Override
-    public void onGuiClosed() {
+    public void onGuiClosed()
+    {
         super.onGuiClosed();
 
         PacketHandler.sendToServer(PacketHandler.getWriter(table, PacketId.CLOSE));
@@ -260,16 +292,19 @@ public class GuiTable extends GuiBase {
     }
 
     @Override
-    public void setWorldAndResolution(Minecraft minecraft, int width, int height) {
+    public void setWorldAndResolution(Minecraft minecraft, int width, int height)
+    {
         super.setWorldAndResolution(minecraft, width, height);
 
-        if (closed) {
+        if (closed)
+        {
             PacketHandler.sendToServer(PacketHandler.getWriter(table, PacketId.RE_OPEN));
             closed = false;
         }
     }
 
-    public TileEntityTable getTable() {
+    public TileEntityTable getTable()
+    {
         return table;
     }
 }

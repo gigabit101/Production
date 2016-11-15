@@ -1,17 +1,19 @@
 package vswe.production.gui.container;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.*;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 
 /*
@@ -20,7 +22,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
     container for other classes (interfaces and the current open container a player has for instance) it must still
     extend Container.
  */
-public abstract class ContainerBase extends Container {
+public abstract class ContainerBase extends Container
+{
     @SideOnly(Side.CLIENT)
     private short transactionID;
     private int dragMouseButton = -1;
@@ -31,22 +34,26 @@ public abstract class ContainerBase extends Container {
 
 
     @SuppressWarnings("unchecked")
-    private List<ItemStack> getItems() {
+    private List<ItemStack> getItems()
+    {
         return inventoryItemStacks;
     }
 
     @SuppressWarnings("unchecked")
-    private List<Slot> getSlots() {
+    private List<Slot> getSlots()
+    {
         return inventorySlots;
     }
 
     @SuppressWarnings("unchecked")
-    private List<IContainerListener> getPlayers() {
+    private List<IContainerListener> getPlayers()
+    {
         return listeners;
     }
 
     @Override
-    protected Slot addSlotToContainer(Slot slot) {
+    protected Slot addSlotToContainer(Slot slot)
+    {
         slot.slotNumber = this.inventorySlots.size();
         getSlots().add(slot);
         getItems().add(null);
@@ -56,9 +63,11 @@ public abstract class ContainerBase extends Container {
     @Override
     public void addListener(IContainerListener player)
     {
-        if (getPlayers().contains(player)) {
+        if (getPlayers().contains(player))
+        {
             throw new IllegalArgumentException("Listener already listening");
-        }else{
+        } else
+        {
             getPlayers().add(player);
 //            player.sendAllWindowProperties(this, getInventory());
             detectAndSendChanges();
@@ -67,10 +76,12 @@ public abstract class ContainerBase extends Container {
 
 
     @Override
-    public List getInventory() {
+    public List getInventory()
+    {
         List<ItemStack> result = new ArrayList<ItemStack>();
 
-        for (Slot slot : getSlots()) {
+        for (Slot slot : getSlots())
+        {
             result.add(slot.getStack());
         }
 
@@ -78,21 +89,26 @@ public abstract class ContainerBase extends Container {
     }
 
     @SideOnly(Side.CLIENT)
-    public void removeCraftingFromCrafters(IContainerListener player) {
+    public void removeCraftingFromCrafters(IContainerListener player)
+    {
         this.listeners.remove(player);
     }
 
     @Override
-    public void detectAndSendChanges() {
-        for (int i = 0; i < getSlots().size(); i++) {
+    public void detectAndSendChanges()
+    {
+        for (int i = 0; i < getSlots().size(); i++)
+        {
             ItemStack slotItem = getSlots().get(i).getStack();
             ItemStack cachedItem = getItems().get(i);
 
-            if (!ItemStack.areItemStacksEqual(cachedItem, slotItem)) {
+            if (!ItemStack.areItemStacksEqual(cachedItem, slotItem))
+            {
                 ItemStack newItem = slotItem == null ? null : slotItem.copy();
                 getItems().set(i, newItem);
 
-                for (IContainerListener player : getPlayers()) {
+                for (IContainerListener player : getPlayers())
+                {
                     player.sendSlotContents(this, i, newItem);
                 }
             }
@@ -100,14 +116,18 @@ public abstract class ContainerBase extends Container {
     }
 
     @Override
-    public boolean enchantItem(EntityPlayer player, int slotId) {
+    public boolean enchantItem(EntityPlayer player, int slotId)
+    {
         return false;
     }
 
     @Override
-    public Slot getSlotFromInventory(IInventory inventory, int slotId) {
-        for (Slot slot : getSlots()) {
-            if (slot.isHere(inventory, slotId)) {
+    public Slot getSlotFromInventory(IInventory inventory, int slotId)
+    {
+        for (Slot slot : getSlots())
+        {
+            if (slot.isHere(inventory, slotId))
+            {
                 return slot;
             }
         }
@@ -116,12 +136,14 @@ public abstract class ContainerBase extends Container {
     }
 
     @Override
-    public Slot getSlot(int slotId) {
+    public Slot getSlot(int slotId)
+    {
         return getSlots().get(slotId);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int slotId) {
+    public ItemStack transferStackInSlot(EntityPlayer player, int slotId)
+    {
         return null;
     }
 
@@ -141,7 +163,6 @@ public abstract class ContainerBase extends Container {
     private static final int CLICK_DRAG_MODE_PRE = 0;
     private static final int CLICK_DRAG_MODE_SLOT = 1;
     private static final int CLICK_DRAG_MODE_POST = 2;
-
 
 
     //DONT THINK THIS IS NEEDED ANYMORE....
@@ -439,24 +460,29 @@ public abstract class ContainerBase extends Container {
 //        return result;
 //    }
 
-    public static boolean canItemBePickedUp(Slot slot, ItemStack playerItem, boolean partiallyMove) {
-        if (slot != null && slot.getHasStack()) {
+    public static boolean canItemBePickedUp(Slot slot, ItemStack playerItem, boolean partiallyMove)
+    {
+        if (slot != null && slot.getHasStack())
+        {
             ItemStack slotItem = slot.getStack();
-            if (playerItem != null && playerItem.isItemEqual(slotItem) && ItemStack.areItemStackTagsEqual(slotItem, playerItem)) {
+            if (playerItem != null && playerItem.isItemEqual(slotItem) && ItemStack.areItemStackTagsEqual(slotItem, playerItem))
+            {
                 int moveSize = partiallyMove ? 0 : playerItem.stackSize;
                 return slot.getStack().stackSize + moveSize <= playerItem.getMaxStackSize();
-            }else{
+            } else
+            {
                 return false;
             }
-        }else{
+        } else
+        {
             return true;
         }
     }
 
-    protected boolean canItemBePickedUpByDoubleClick(ItemStack itemStack, Slot slot) {
+    protected boolean canItemBePickedUpByDoubleClick(ItemStack itemStack, Slot slot)
+    {
         return true;
     }
-
 
 
 //    @Override
@@ -465,54 +491,67 @@ public abstract class ContainerBase extends Container {
 //    }
 
     @Override
-    public void onContainerClosed(EntityPlayer player) {
+    public void onContainerClosed(EntityPlayer player)
+    {
         InventoryPlayer inventoryplayer = player.inventory;
 
-        if (inventoryplayer.getItemStack() != null) {
+        if (inventoryplayer.getItemStack() != null)
+        {
             player.dropItem(inventoryplayer.getItemStack(), false);
             inventoryplayer.setItemStack(null);
         }
     }
 
     @Override
-    public void onCraftMatrixChanged(IInventory inventory) {
+    public void onCraftMatrixChanged(IInventory inventory)
+    {
         detectAndSendChanges();
     }
 
     @Override
-    public void putStackInSlot(int slotId, ItemStack item) {
+    public void putStackInSlot(int slotId, ItemStack item)
+    {
         getSlot(slotId).putStack(item);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void putStacksInSlots(ItemStack[] items) {
-        for (int i = 0; i < items.length; ++i) {
+    public void putStacksInSlots(ItemStack[] items)
+    {
+        for (int i = 0; i < items.length; ++i)
+        {
             putStackInSlot(i, items[i]);
         }
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateProgressBar(int id, int data) {}
+    public void updateProgressBar(int id, int data)
+    {
+    }
 
 
     @SideOnly(Side.CLIENT)
-    public short getNextTransactionID(InventoryPlayer inventory) {
+    public short getNextTransactionID(InventoryPlayer inventory)
+    {
         transactionID++;
         return transactionID;
     }
 
 
-    protected boolean isPlayerValid(EntityPlayer player) {
+    protected boolean isPlayerValid(EntityPlayer player)
+    {
         return !invalidPlayers.contains(player);
     }
 
 
-    protected void setValidState(EntityPlayer player, boolean valid) {
-        if (valid) {
+    protected void setValidState(EntityPlayer player, boolean valid)
+    {
+        if (valid)
+        {
             invalidPlayers.remove(player);
-        }else{
+        } else
+        {
             invalidPlayers.add(player);
         }
     }
@@ -522,30 +561,37 @@ public abstract class ContainerBase extends Container {
     public abstract boolean canInteractWith(EntityPlayer player);
 
     @Override
-    protected boolean mergeItemStack(ItemStack item, int start, int end, boolean invert) {
+    protected boolean mergeItemStack(ItemStack item, int start, int end, boolean invert)
+    {
         boolean moved = false;
         int index = start;
 
-        if (invert) {
+        if (invert)
+        {
             index = end - 1;
         }
 
 
-        if (item.isStackable()) {
-            while (item.stackSize > 0 && (!invert && index < end || invert && index >= start)) {
+        if (item.isStackable())
+        {
+            while (item.stackSize > 0 && (!invert && index < end || invert && index >= start))
+            {
                 Slot slot = getSlot(index);
                 ItemStack slotItem = slot.getStack();
 
-                if (slotItem != null && slotItem.getItem() == item.getItem() && (!item.getHasSubtypes() || item.getItemDamage() == slotItem.getItemDamage()) && ItemStack.areItemStackTagsEqual(item, slotItem)) {
+                if (slotItem != null && slotItem.getItem() == item.getItem() && (!item.getHasSubtypes() || item.getItemDamage() == slotItem.getItemDamage()) && ItemStack.areItemStackTagsEqual(item, slotItem))
+                {
                     int newSize = slotItem.stackSize + item.stackSize;
 
-                    if (newSize <= item.getMaxStackSize()) {
+                    if (newSize <= item.getMaxStackSize())
+                    {
                         item.stackSize = 0;
                         slotItem.stackSize = newSize;
                         slot.onSlotChanged();
                         moved = true;
 
-                    }else if (slotItem.stackSize < item.getMaxStackSize()) {
+                    } else if (slotItem.stackSize < item.getMaxStackSize())
+                    {
                         item.stackSize -= item.getMaxStackSize() - slotItem.stackSize;
                         slotItem.stackSize = item.getMaxStackSize();
                         slot.onSlotChanged();
@@ -557,18 +603,23 @@ public abstract class ContainerBase extends Container {
             }
         }
 
-        if (item.stackSize > 0) {
-            if (invert) {
+        if (item.stackSize > 0)
+        {
+            if (invert)
+            {
                 index = end - 1;
-            }else {
+            } else
+            {
                 index = start;
             }
 
-            while (!invert && index < end || invert && index >= start) {
+            while (!invert && index < end || invert && index >= start)
+            {
                 Slot slot = getSlot(index);
                 ItemStack slotItem = slot.getStack();
 
-                if (slotItem == null) {
+                if (slotItem == null)
+                {
                     slot.putStack(item.copy());
                     slot.onSlotChanged();
                     item.stackSize = 0;
@@ -584,14 +635,15 @@ public abstract class ContainerBase extends Container {
     }
 
 
-
-    protected void resetDragging() {
+    protected void resetDragging()
+    {
         dragMode = CLICK_DRAG_MODE_PRE;
         draggedSlots.clear();
     }
 
     @Override
-    public boolean canDragIntoSlot(Slot slot) {
+    public boolean canDragIntoSlot(Slot slot)
+    {
         return true;
     }
 
@@ -607,7 +659,8 @@ public abstract class ContainerBase extends Container {
        classes.
      */
 
-    protected int getSlotStackLimit(Slot slot, ItemStack itemStack) {
+    protected int getSlotStackLimit(Slot slot, ItemStack itemStack)
+    {
         return slot.getSlotStackLimit();
     }
 

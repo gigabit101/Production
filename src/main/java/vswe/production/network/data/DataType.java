@@ -7,7 +7,8 @@ import vswe.production.network.IBitCount;
 import vswe.production.network.LengthCount;
 import vswe.production.tileentity.TileEntityTable;
 
-public enum DataType {
+public enum DataType
+{
     PAGE(DataPage.class),
     PROGRESS(DataUnit.Progress.class, DataUnit.LENGTH),
     POWER(DataFuel.class),
@@ -24,29 +25,39 @@ public enum DataType {
     private int length;
     private DataBase data;
 
-    DataType(Class<? extends DataBase> clazz, int length) {
+    DataType(Class<? extends DataBase> clazz, int length)
+    {
         this(clazz);
         this.length = length;
         lengthBits = new LengthCount(length);
     }
 
-    DataType(Class<? extends DataBase> clazz) {
-        try {
+    DataType(Class<? extends DataBase> clazz)
+    {
+        try
+        {
             data = clazz.newInstance();
-        }catch (Exception e) {
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
         this.length = 1;
     }
 
-    public void save(TileEntityTable table, DataWriter dw, int id) {
-        if (data != null) {
-            if (id == -1) {
-                for (int i = 0; i < length; i++) {
+    public void save(TileEntityTable table, DataWriter dw, int id)
+    {
+        if (data != null)
+        {
+            if (id == -1)
+            {
+                for (int i = 0; i < length; i++)
+                {
                     data.save(table, dw, i);
                 }
-            }else{
-                if (lengthBits != null) {
+            } else
+            {
+                if (lengthBits != null)
+                {
                     dw.writeData(id, lengthBits);
                 }
                 data.save(table, dw, id);
@@ -54,15 +65,21 @@ public enum DataType {
         }
     }
 
-    public int load(TileEntityTable table, DataReader dr, boolean all) {
-        if (data != null) {
-            if (all) {
-                for (int i = 0; i < length; i++) {
+    public int load(TileEntityTable table, DataReader dr, boolean all)
+    {
+        if (data != null)
+        {
+            if (all)
+            {
+                for (int i = 0; i < length; i++)
+                {
                     data.load(table, dr, i);
                 }
-            }else{
+            } else
+            {
                 int id = 0;
-                if (lengthBits != null) {
+                if (lengthBits != null)
+                {
                     id = dr.readData(lengthBits);
                 }
                 data.load(table, dr, id);
@@ -73,11 +90,13 @@ public enum DataType {
         return -1;
     }
 
-    public boolean shouldBounce(TileEntityTable table) {
+    public boolean shouldBounce(TileEntityTable table)
+    {
         return data != null && data.shouldBounce(table);
     }
 
-    public boolean shouldBounceToAll(TileEntityTable table) {
+    public boolean shouldBounceToAll(TileEntityTable table)
+    {
         return data != null && data.shouldBounceToAll(table);
     }
 }
