@@ -1,12 +1,10 @@
 package vswe.production.gui.container.slot;
 
-
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.fluids.FluidContainerRegistry;
-import vswe.production.item.Upgrade;
 import vswe.production.page.Page;
 import vswe.production.tileentity.TileEntityTable;
 
@@ -22,6 +20,6 @@ public class SlotFuel extends SlotTable {
 
     @Override
     public boolean canShiftClickInto(ItemStack item) {
-        return !item.getItem().equals(Item.getItemFromBlock(Blocks.crafting_table));
+        return !item.getItem().equals(Item.getItemFromBlock(Blocks.CRAFTING_TABLE));
     }
 }

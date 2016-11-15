@@ -1,8 +1,5 @@
 package vswe.production.page.unit;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -17,6 +14,9 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatList;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import vswe.production.gui.GuiBase;
 import vswe.production.gui.container.slot.SlotUnitCraftingGrid;
 import vswe.production.gui.container.slot.SlotUnitCraftingOutput;
@@ -77,7 +77,7 @@ public class UnitCrafting extends Unit {
     public boolean isEnabled() {
         ItemStack item = table.getUpgradePage().getUpgradeMainItem(id);
 
-        return item != null && Item.getItemFromBlock(Blocks.crafting_table) == item.getItem();
+        return item != null && Item.getItemFromBlock(Blocks.CRAFTING_TABLE) == item.getItem();
     }
 
 
@@ -109,37 +109,37 @@ public class UnitCrafting extends Unit {
             ex.printStackTrace();
         }
         if(player != null) {
-            player.addStat(StatList.objectCraftStats[Item.getIdFromItem(item)], itemStack.stackSize);
+//            player.addStat(StatList.objectCraftStats[Item.getIdFromItem(item)], itemStack.stackSize);
         }
         try {
-            item.onCreated(itemStack, table.getWorldObj(), player);
+            item.onCreated(itemStack, table.getWorld(), player);
         }catch (Exception ex) {
             ex.printStackTrace();
         }
 
         if (player != null) {
-            if (item == Item.getItemFromBlock(Blocks.crafting_table)) {
-                player.addStat(AchievementList.buildWorkBench, 1);
+            if (item == Item.getItemFromBlock(Blocks.CRAFTING_TABLE)) {
+                player.addStat(AchievementList.BUILD_WORK_BENCH, 1);
             }else if (item instanceof ItemPickaxe) {
-                player.addStat(AchievementList.buildPickaxe, 1);
+                player.addStat(AchievementList.BUILD_PICKAXE, 1);
 
-                if (((ItemPickaxe)item).func_150913_i() != Item.ToolMaterial.WOOD) {
-                    player.addStat(AchievementList.buildBetterPickaxe, 1);
-                }
-            }else if (item == Item.getItemFromBlock(Blocks.furnace)) {
-                player.addStat(AchievementList.buildFurnace, 1);
+//                if (((ItemPickaxe)item).func_150913_i() != Item.ToolMaterial.WOOD) {
+//                    player.addStat(AchievementList.buildBetterPickaxe, 1);
+//                }
+            }else if (item == Item.getItemFromBlock(Blocks.FURNACE)) {
+                player.addStat(AchievementList.BUILD_FURNACE, 1);
             }else if (item instanceof ItemHoe) {
-                player.addStat(AchievementList.buildHoe, 1);
-            }else if (item == Items.bread) {
-                player.addStat(AchievementList.makeBread, 1);
-            }else if (item == Items.cake) {
-                player.addStat(AchievementList.bakeCake, 1);
+                player.addStat(AchievementList.BUILD_HOE, 1);
+            }else if (item == Items.BREAD) {
+                player.addStat(AchievementList.MAKE_BREAD, 1);
+            }else if (item == Items.CAKE) {
+                player.addStat(AchievementList.BAKE_CAKE, 1);
             }else if (item instanceof ItemSword) {
-                player.addStat(AchievementList.buildSword, 1);
-            }else if (item == Item.getItemFromBlock(Blocks.enchanting_table)) {
-                player.addStat(AchievementList.enchantments, 1);
-            }else if (item == Item.getItemFromBlock(Blocks.bookshelf)) {
-                player.addStat(AchievementList.bookcase, 1);
+                player.addStat(AchievementList.BUILD_SWORD, 1);
+            }else if (item == Item.getItemFromBlock(Blocks.ENCHANTING_TABLE)) {
+                player.addStat(AchievementList.ENCHANTMENTS, 1);
+            }else if (item == Item.getItemFromBlock(Blocks.BOOKSHELF)) {
+                player.addStat(AchievementList.BOOKCASE, 1);
             }
         }
     }
@@ -179,15 +179,16 @@ public class UnitCrafting extends Unit {
         gui.drawRect(x, y, CLEAR_SRC_X + index * CLEAR_SIZE, CLEAR_SRC_Y, CLEAR_SIZE, CLEAR_SIZE);
     }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void onClick(GuiBase gui, int mX, int mY) {
-        super.onClick(gui, mX, mY);
 
-        if (gui.inBounds(this.x + START_X + GRID_WIDTH * SLOT_SIZE + CLEAR_OFFSET_X, this.y + START_Y + CLEAR_OFFSET_Y, CLEAR_SIZE, CLEAR_SIZE, mX, mY)) {
-            table.clearGridSend(id);
-        }
-    }
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public void onClick(GuiBase gui, int mX, int mY) {
+//        super.onClick(gui, mX, mY);
+//
+//        if (gui.inBounds(this.x + START_X + GRID_WIDTH * SLOT_SIZE + CLEAR_OFFSET_X, this.y + START_Y + CLEAR_OFFSET_Y, CLEAR_SIZE, CLEAR_SIZE, mX, mY)) {
+//            table.clearGridSend(id);
+//        }
+//    }
 
     private void onCrafting(CraftingBase crafting, boolean auto, boolean fake) {
         for (int i = 0; i < GRID_SIZE; i++) {
@@ -211,14 +212,14 @@ public class UnitCrafting extends Unit {
                     ItemStack containerItem = itemStack.getItem().getContainerItem(itemStack);
                     if (!containerItem.isItemStackDamageable() || containerItem.getItemDamage() <= containerItem.getMaxDamage()) {
                         //TODO where should the container go?
-                        if (false && itemStack.getItem().doesContainerItemLeaveCraftingGrid(itemStack)) {
+//                        if (false && itemStack.getItem().doesContainerItemLeaveCraftingGrid(itemStack)) {
                             if (!fake) {
                                 table.spitOutItem(containerItem);
                             }
                         }else{
                             crafting.setInventorySlotContents(id, containerItem);
                         }
-                    }
+//                    }
                 }
             }
         }
@@ -368,12 +369,12 @@ public class UnitCrafting extends Unit {
             }
         }
 
-        @Override
-        public ItemStack getStackInSlotOnClosing(int id) {
-            ItemStack item = getStackInSlot(id);
-            setInventorySlotContents(id, null);
-            return item;
-        }
+//        @Override
+//        public ItemStack getStackInSlotOnClosing(int id) {
+//            ItemStack item = getStackInSlot(id);
+//            setInventorySlotContents(id, null);
+//            return item;
+//        }
 
         @Override
         public ItemStack getStackInRowAndColumn(int x, int y) {
@@ -395,7 +396,7 @@ public class UnitCrafting extends Unit {
         }
 
         public boolean isMatch(IRecipe recipe) {
-            return recipe.matches(this, table.getWorldObj());
+            return recipe.matches(this, table.getWorld());
         }
 
         public IRecipe getRecipe() {
@@ -459,7 +460,7 @@ public class UnitCrafting extends Unit {
                         return null;
                     }
 
-                    units += item.getMaxDamage() - item.getItemDamageForDisplay();
+                    units += item.getMaxDamage() - item.getItemDamage();
                     count++;
                 }
             }
@@ -483,6 +484,12 @@ public class UnitCrafting extends Unit {
         @Override
         public ItemStack getRecipeOutput() {
             return null;
+        }
+
+        @Override
+        public ItemStack[] getRemainingItems(InventoryCrafting inv)
+        {
+            return new ItemStack[0];
         }
     }
 

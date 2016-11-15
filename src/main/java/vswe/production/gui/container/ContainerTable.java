@@ -1,9 +1,8 @@
 package vswe.production.gui.container;
 
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import vswe.production.gui.container.slot.SlotBase;
@@ -44,10 +43,10 @@ public class ContainerTable extends ContainerBase {
         return table.isUseableByPlayer(player);
     }
 
-
     @Override
-    public void addCraftingToCrafters(ICrafting player) {
-        super.addCraftingToCrafters(player);
+    public void addListener(IContainerListener player)
+    {
+        super.addListener(player);
 
         if (player instanceof EntityPlayer) {
             table.addPlayer((EntityPlayer)player);

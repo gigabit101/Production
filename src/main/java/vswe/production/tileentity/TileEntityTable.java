@@ -2,16 +2,15 @@ package vswe.production.tileentity;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -23,7 +22,6 @@ import vswe.production.gui.container.slot.SlotFuel;
 import vswe.production.gui.menu.GuiMenu;
 import vswe.production.gui.menu.GuiMenuItem;
 import vswe.production.item.Upgrade;
-import vswe.production.network.BasicCount;
 import vswe.production.network.DataReader;
 import vswe.production.network.DataWriter;
 import vswe.production.network.IBitCount;
@@ -41,11 +39,12 @@ import vswe.production.network.data.DataType;
 import vswe.production.page.unit.Unit;
 import vswe.production.page.unit.UnitCrafting;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class TileEntityTable extends TileEntity implements IInventory, ISidedInventory, IFluidHandler {
+public class TileEntityTable extends TileEntity implements IInventory, ISidedInventory, IFluidHandler, ITickable
+{
     private List<Page> pages;
     private Page selectedPage;
     private List<SlotBase> slots;
@@ -147,31 +146,29 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         }
     }
 
+    @Nullable
     @Override
-    public ItemStack getStackInSlotOnClosing(int id) {
-        if (slots.get(id).shouldDropOnClosing()) {
-            ItemStack item = getStackInSlot(id);
-            setInventorySlotContents(id, null);
-            return item;
-        }else{
-            return null;
-        }
+    public ItemStack removeStackFromSlot(int index)
+    {
+        return null;
     }
+
+//    @Override
+//    public ItemStack getStackInSlotOnClosing(int id) {
+//        if (slots.get(id).shouldDropOnClosing()) {
+//            ItemStack item = getStackInSlot(id);
+//            setInventorySlotContents(id, null);
+//            return item;
+//        }else{
+//            return null;
+//        }
+//    }
 
     @Override
     public void setInventorySlotContents(int id, ItemStack item) {
         items[id] = item;
     }
 
-    @Override
-    public String getInventoryName() {
-        return "Production Table";
-    }
-
-    @Override
-    public boolean hasCustomInventoryName() {
-        return false;
-    }
 
     @Override
     public int getInventoryStackLimit() {
@@ -181,18 +178,15 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
-        return player.getDistanceSq(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D) <= 64;
+        return true;
     }
 
     @Override
-    public void openInventory() {
-
-    }
+    public void openInventory(EntityPlayer player) {}
 
     @Override
-    public void closeInventory() {
+    public void closeInventory(EntityPlayer player) {}
 
-    }
 
     public void addSlot(SlotBase slot) {
         slots.add(slot);
@@ -317,14 +311,13 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     private int slotTick = 0;
     private static final int SLOT_DELAY = 10;
 
-    @Override
     public void updateEntity() {
         for (Page page : pages) {
             page.onUpdate();
         }
 
         if (!worldObj.isRemote && ++fuelTick >= FUEL_DELAY) {
-            lit = worldObj.getBlockLightValue(xCoord, yCoord + 1, zCoord) == 15;
+            lit = worldObj.getLight(pos) == 15;
             if (lastLit != lit) {
                 lastLit = lit;
                 sendDataToAllPlayer(DataType.LIT);
@@ -339,10 +332,10 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
             if (getUpgradePage().hasGlobalUpgrade(Upgrade.AUTO_TRANSFER)) {
                 int transferSize = (int)Math.pow(2, getUpgradePage().getGlobalUpgradeCount(Upgrade.TRANSFER));
                 for (Setting setting : getTransferPage().getSettings()) {
-                    for (Side side : setting.getSides()) {
-                        transfer(setting, side, side.getInput(), transferSize);
-                        transfer(setting, side, side.getOutput(), transferSize);
-                    }
+//                    for (Side side : setting.getSides()) {
+//                        transfer(setting, side, side.getInput(), transferSize);
+//                        transfer(setting, side, side.getOutput(), transferSize);
+//                    }
                 }
             }
         }
@@ -355,131 +348,131 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         }
     }
 
-    private void transfer(Setting setting, Side side, Transfer transfer, int transferSize) {
-        if (transfer.isEnabled() && transfer.isAuto()) {
-            ForgeDirection direction = ForgeDirection.values()[BlockTable.getSideFromSideAndMetaReversed(side.getDirection().ordinal(), getBlockMetadata())];
-
-            TileEntity te = worldObj.getTileEntity(xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ);
-            if (te instanceof IInventory) {
-                IInventory inventory;
-                if (te instanceof TileEntityChest) {
-                    inventory = Blocks.chest.func_149951_m(te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord);
-                    if (inventory == null) {
-                        return;
-                    }
-                }else{
-                    inventory = (IInventory)te;
-                }
-
-                List<SlotBase> transferSlots = setting.getSlots();
-                if (transferSlots == null) {
-                    return;
-                }
-                int[] slots1 = new int[transferSlots.size()];
-                for (int i = 0; i < transferSlots.size(); i++) {
-                    slots1[i] = transferSlots.get(i).getSlotIndex();
-                }
-
-                int[] slots2;
-                ForgeDirection directionReversed = direction.getOpposite();
-                if (inventory instanceof ISidedInventory) {
-                    slots2 = ((ISidedInventory)inventory).getAccessibleSlotsFromSide(directionReversed.ordinal());
-                }else{
-                    slots2 = new int[inventory.getSizeInventory()];
-                    for (int i = 0; i < slots2.length; i++) {
-                        slots2[i] = i;
-                    }
-                }
-
-
-                if (slots2 == null ||slots2.length == 0) {
-                    return;
-                }
-
-                if (transfer.isInput()) {
-                    transfer(inventory, this, slots2, slots1, directionReversed.ordinal(), direction.ordinal(), transferSize);
-                }else{
-                    transfer(this, inventory, slots1, slots2, direction.ordinal(), directionReversed.ordinal(), transferSize);
-                }
-            }
-
-
-        }
-    }
-
-    private void transfer(IInventory from, IInventory to, int[] fromSlots, int[] toSlots, int fromSide, int toSide, int maxTransfer) {
-        int oldTransfer = maxTransfer;
-
-        try {
-            ISidedInventory fromSided = fromSide != -1 && from instanceof ISidedInventory ? (ISidedInventory)from : null;
-            ISidedInventory toSided = toSide != -1 && to instanceof ISidedInventory ? (ISidedInventory)to : null;
-
-            for (int fromSlot : fromSlots) {
-                ItemStack fromItem = from.getStackInSlot(fromSlot);
-                if (fromItem != null && fromItem.stackSize > 0) {
-                    if (fromSided == null || fromSided.canExtractItem(fromSlot, fromItem, fromSide)) {
-                        if (fromItem.isStackable()) {
-                            for (int toSlot : toSlots) {
-                                ItemStack toItem = to.getStackInSlot(toSlot);
-                                if (toItem != null && toItem.stackSize > 0) {
-                                    if (toSided == null || toSided.canInsertItem(toSlot, fromItem, toSide)) {
-                                        if (fromItem.isItemEqual(toItem) && ItemStack.areItemStackTagsEqual(toItem, fromItem)) {
-                                            int maxSize = Math.min(toItem.getMaxStackSize(), to.getInventoryStackLimit());
-                                            int maxMove = Math.min(maxSize - toItem.stackSize, Math.min(maxTransfer, fromItem.stackSize));
-
-                                            toItem.stackSize += maxMove;
-                                            maxTransfer -= maxMove;
-                                            fromItem.stackSize -= maxMove;
-                                            if (fromItem.stackSize == 0) {
-                                                from.setInventorySlotContents(fromSlot, null);
-                                            }
-
-                                            if (maxTransfer == 0) {
-                                                return;
-                                            } else if (fromItem.stackSize == 0) {
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (fromItem.stackSize > 0) {
-                            for (int toSlot : toSlots) {
-                                ItemStack toItem = to.getStackInSlot(toSlot);
-                                if (toItem == null && to.isItemValidForSlot(toSlot, fromItem)) {
-                                    if (toSided == null || toSided.canInsertItem(toSlot, fromItem, toSide)) {
-                                        toItem = fromItem.copy();
-                                        toItem.stackSize = Math.min(maxTransfer, fromItem.stackSize);
-                                        to.setInventorySlotContents(toSlot, toItem);
-                                        maxTransfer -= toItem.stackSize;
-                                        fromItem.stackSize -= toItem.stackSize;
-
-                                        if (fromItem.stackSize == 0) {
-                                            from.setInventorySlotContents(fromSlot, null);
-                                        }
-
-                                        if (maxTransfer == 0) {
-                                            return;
-                                        } else if (fromItem.stackSize == 0) {
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-        }finally {
-            if (oldTransfer != maxTransfer) {
-                to.markDirty();
-                from.markDirty();
-            }
-        }
-    }
+//    private void transfer(Setting setting, Side side, Transfer transfer, int transferSize) {
+//        if (transfer.isEnabled() && transfer.isAuto()) {
+//            EnumFacing direction = EnumFacing.values()[BlockTable.getSideFromSideAndMetaReversed(side.getDirection().ordinal(), getBlockMetadata())];
+//
+//            TileEntity te = worldObj.getTileEntity(getPos());
+//            if (te instanceof IInventory) {
+//                IInventory inventory;
+//                if (te instanceof TileEntityChest) {
+//                    inventory = Blocks.chest.func_149951_m(te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord);
+//                    if (inventory == null) {
+//                        return;
+//                    }
+//                }else{
+//                    inventory = (IInventory)te;
+//                }
+//
+//                List<SlotBase> transferSlots = setting.getSlots();
+//                if (transferSlots == null) {
+//                    return;
+//                }
+//                int[] slots1 = new int[transferSlots.size()];
+//                for (int i = 0; i < transferSlots.size(); i++) {
+//                    slots1[i] = transferSlots.get(i).getSlotIndex();
+//                }
+//
+//                int[] slots2;
+//                ForgeDirection directionReversed = direction.getOpposite();
+//                if (inventory instanceof ISidedInventory) {
+//                    slots2 = ((ISidedInventory)inventory).getAccessibleSlotsFromSide(directionReversed.ordinal());
+//                }else{
+//                    slots2 = new int[inventory.getSizeInventory()];
+//                    for (int i = 0; i < slots2.length; i++) {
+//                        slots2[i] = i;
+//                    }
+//                }
+//
+//
+//                if (slots2 == null ||slots2.length == 0) {
+//                    return;
+//                }
+//
+//                if (transfer.isInput()) {
+//                    transfer(inventory, this, slots2, slots1, directionReversed.ordinal(), direction.ordinal(), transferSize);
+//                }else{
+//                    transfer(this, inventory, slots1, slots2, direction.ordinal(), directionReversed.ordinal(), transferSize);
+//                }
+//            }
+//
+//
+//        }
+//    }
+//
+//    private void transfer(IInventory from, IInventory to, int[] fromSlots, int[] toSlots, int fromSide, int toSide, int maxTransfer) {
+//        int oldTransfer = maxTransfer;
+//
+//        try {
+//            ISidedInventory fromSided = fromSide != -1 && from instanceof ISidedInventory ? (ISidedInventory)from : null;
+//            ISidedInventory toSided = toSide != -1 && to instanceof ISidedInventory ? (ISidedInventory)to : null;
+//
+//            for (int fromSlot : fromSlots) {
+//                ItemStack fromItem = from.getStackInSlot(fromSlot);
+//                if (fromItem != null && fromItem.stackSize > 0) {
+//                    if (fromSided == null || fromSided.canExtractItem(fromSlot, fromItem, fromSide)) {
+//                        if (fromItem.isStackable()) {
+//                            for (int toSlot : toSlots) {
+//                                ItemStack toItem = to.getStackInSlot(toSlot);
+//                                if (toItem != null && toItem.stackSize > 0) {
+//                                    if (toSided == null || toSided.canInsertItem(toSlot, fromItem, toSide)) {
+//                                        if (fromItem.isItemEqual(toItem) && ItemStack.areItemStackTagsEqual(toItem, fromItem)) {
+//                                            int maxSize = Math.min(toItem.getMaxStackSize(), to.getInventoryStackLimit());
+//                                            int maxMove = Math.min(maxSize - toItem.stackSize, Math.min(maxTransfer, fromItem.stackSize));
+//
+//                                            toItem.stackSize += maxMove;
+//                                            maxTransfer -= maxMove;
+//                                            fromItem.stackSize -= maxMove;
+//                                            if (fromItem.stackSize == 0) {
+//                                                from.setInventorySlotContents(fromSlot, null);
+//                                            }
+//
+//                                            if (maxTransfer == 0) {
+//                                                return;
+//                                            } else if (fromItem.stackSize == 0) {
+//                                                break;
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//
+//                        if (fromItem.stackSize > 0) {
+//                            for (int toSlot : toSlots) {
+//                                ItemStack toItem = to.getStackInSlot(toSlot);
+//                                if (toItem == null && to.isItemValidForSlot(toSlot, fromItem)) {
+//                                    if (toSided == null || toSided.canInsertItem(toSlot, fromItem, toSide)) {
+//                                        toItem = fromItem.copy();
+//                                        toItem.stackSize = Math.min(maxTransfer, fromItem.stackSize);
+//                                        to.setInventorySlotContents(toSlot, toItem);
+//                                        maxTransfer -= toItem.stackSize;
+//                                        fromItem.stackSize -= toItem.stackSize;
+//
+//                                        if (fromItem.stackSize == 0) {
+//                                            from.setInventorySlotContents(fromSlot, null);
+//                                        }
+//
+//                                        if (maxTransfer == 0) {
+//                                            return;
+//                                        } else if (fromItem.stackSize == 0) {
+//                                            break;
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            }
+//        }finally {
+//            if (oldTransfer != maxTransfer) {
+//                to.markDirty();
+//                from.markDirty();
+//            }
+//        }
+//    }
 
 
     private int lava;
@@ -536,7 +529,7 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     public boolean isLitAndCanSeeTheSky() {
-        return lit &&  worldObj.canBlockSeeTheSky(xCoord, yCoord + 1, zCoord);
+        return lit &&  worldObj.canBlockSeeSky(getPos());
     }
 
 
@@ -609,19 +602,33 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     @Override
-    public int[] getAccessibleSlotsFromSide(int side) {
-        return sideSlots[getTransferSide(side)];
+    public int getField(int id)
+    {
+        return 0;
     }
 
     @Override
-    public boolean canInsertItem(int slot, ItemStack item, int side) {
-        return isItemValidForSlot(slot, item) && slots.get(slot).canAcceptItem(item) && slots.get(slot).isInputValid(getTransferSide(side), item);
+    public void setField(int id, int value)
+    {
+
     }
 
     @Override
-    public boolean canExtractItem(int slot, ItemStack item, int side) {
-        return slots.get(slot).isOutputValid(getTransferSide(side), item);
+    public int getFieldCount()
+    {
+        return 0;
     }
+
+    @Override
+    public void clear()
+    {
+
+    }
+
+//    @Override
+//    public int[] getAccessibleSlotsFromSide(EnumFacing side) {
+//        return sideSlots[getTransferSide(side)];
+//    }
 
 
     private int getTransferSide(int side) {
@@ -640,7 +647,7 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
 
 
     @Override
-    public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+    public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
         if (resource != null && resource.getFluid() != null && resource.getFluid().equals(FluidRegistry.LAVA)) {
             int space = MAX_LAVA - lava;
             int fill = Math.min(space, resource.amount);
@@ -655,7 +662,7 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     @Override
-    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+    public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
         if (resource != null && resource.getFluid() != null && resource.getFluid().equals(FluidRegistry.LAVA)) {
             return drain(from, resource.amount, doDrain);
         }else{
@@ -664,7 +671,7 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     @Override
-    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+    public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
         int drain = Math.min(maxDrain, lava);
         if (doDrain) {
             lava -= drain;
@@ -674,17 +681,17 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     }
 
     @Override
-    public boolean canFill(ForgeDirection from, Fluid fluid) {
+    public boolean canFill(EnumFacing from, Fluid fluid) {
         return fluid != null && fluid.equals(FluidRegistry.LAVA);
     }
 
     @Override
-    public boolean canDrain(ForgeDirection from, Fluid fluid) {
+    public boolean canDrain(EnumFacing from, Fluid fluid) {
         return fluid != null && fluid.equals(FluidRegistry.LAVA);
     }
 
     @Override
-    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+    public FluidTankInfo[] getTankInfo(EnumFacing from) {
         return new FluidTankInfo[] {new FluidTankInfo(new FluidStack(FluidRegistry.LAVA, lava), MAX_LAVA)};
     }
 
@@ -717,12 +724,15 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
     private static final int COMPOUND_ID = 10;
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    {
         super.writeToNBT(compound);
 
         NBTTagList itemList = new NBTTagList();
-        for (int i = 0; i < items.length; i++) {
-            if (items[i] != null) {
+        for (int i = 0; i < items.length; i++)
+        {
+            if (items[i] != null)
+            {
                 NBTTagCompound slotCompound = new NBTTagCompound();
                 slotCompound.setByte(NBT_SLOT, (byte) i);
                 items[i].writeToNBT(slotCompound);
@@ -732,7 +742,8 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         compound.setTag(NBT_ITEMS, itemList);
 
         NBTTagList unitList = new NBTTagList();
-        for (Unit unit : getMainPage().getUnits()) {
+        for (Unit unit : getMainPage().getUnits())
+        {
             NBTTagCompound unitCompound = new NBTTagCompound();
             unit.writeToNBT(unitCompound);
             unitList.appendTag(unitCompound);
@@ -740,11 +751,13 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         compound.setTag(NBT_UNITS, unitList);
 
         NBTTagList settingList = new NBTTagList();
-        for (Setting setting : getTransferPage().getSettings()) {
+        for (Setting setting : getTransferPage().getSettings())
+        {
             NBTTagCompound settingCompound = new NBTTagCompound();
 
             NBTTagList sideList = new NBTTagList();
-            for (Side side : setting.getSides()) {
+            for (Side side : setting.getSides())
+            {
                 NBTTagCompound sideCompound = new NBTTagCompound();
                 NBTTagCompound inputCompound = new NBTTagCompound();
                 NBTTagCompound outputCompound = new NBTTagCompound();
@@ -761,8 +774,9 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         }
         compound.setTag(NBT_SETTINGS, settingList);
 
-        compound.setShort(NBT_POWER, (short)power);
+        compound.setShort(NBT_POWER, (short) power);
         compound.setShort(NBT_LAVA, (byte) lava);
+        return compound;
     }
 
     @Override
@@ -822,7 +836,7 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
         float offsetY = worldObj.rand.nextFloat() * 0.8F + 0.1F;
         float offsetZ = worldObj.rand.nextFloat() * 0.8F + 0.1F;
 
-        EntityItem entityItem = new EntityItem(worldObj, xCoord + offsetX, yCoord + offsetY, zCoord + offsetZ, item.copy());
+        EntityItem entityItem = new EntityItem(worldObj, getPos().getX() + offsetX, getPos().getY() + offsetY, getPos().getZ() + offsetZ, item.copy());
         entityItem.motionX = worldObj.rand.nextGaussian() * 0.05F;
         entityItem.motionY = worldObj.rand.nextGaussian() * 0.05F + 0.2F;
         entityItem.motionZ = worldObj.rand.nextGaussian() * 0.05F;
@@ -850,9 +864,44 @@ public class TileEntityTable extends TileEntity implements IInventory, ISidedInv
                 to[i] = i;
             }
 
-            transfer(this, player.inventory, from, to, -1, -1, Integer.MAX_VALUE);
+//            transfer(this, player.inventory, from, to, -1, -1, Integer.MAX_VALUE);
         }
     }
 
 
+    @Override
+    public int[] getSlotsForFace(EnumFacing side)
+    {
+        return new int[0];
+    }
+
+    @Override
+    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction)
+    {
+        return false;
+    }
+
+    @Override
+    public String getName()
+    {
+        return null;
+    }
+
+    @Override
+    public boolean hasCustomName()
+    {
+        return false;
+    }
+
+    @Override
+    public void update()
+    {
+        updateEntity();
+    }
 }

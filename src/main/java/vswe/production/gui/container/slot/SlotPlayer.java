@@ -4,7 +4,6 @@ import net.minecraft.inventory.IInventory;
 import vswe.production.gui.GuiBase;
 import vswe.production.tileentity.TileEntityTable;
 
-
 public class SlotPlayer extends SlotBase {
     public SlotPlayer(IInventory inventory, TileEntityTable table, int id, int x, int y) {
         super(inventory, table, id, x, y);

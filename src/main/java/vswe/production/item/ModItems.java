@@ -1,18 +1,13 @@
 package vswe.production.item;
 
-
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public final class ModItems {
     public static ItemUpgrade upgrade;
 
     private static final String UNLOCALIZED_NAME = "production_table_upgrade";
-    private static final String UNKNOWN_UPGRADE = "Unknown upgrade";
 
     private static final String STONE = "stone";
     private static final String PLANKS = "plankWood";
@@ -29,23 +24,18 @@ public final class ModItems {
         upgrade = new ItemUpgrade();
         upgrade.setUnlocalizedName(UNLOCALIZED_NAME);
         GameRegistry.registerItem(upgrade, UNLOCALIZED_NAME);
-        for (Upgrade upgrade : Upgrade.values()) {
-            LanguageRegistry.addName(upgrade.getItemStack(), upgrade.getName());
-        }
-        LanguageRegistry.addName(Upgrade.getInvalidItemStack(), UNKNOWN_UPGRADE);
-
 
         addRecipe(Upgrade.BLANK, "SP", "PS", 'S', STONE, 'P', PLANKS);
-        addRecipe(Upgrade.STORAGE, "C", "U", 'C', Blocks.chest, 'U', Upgrade.BLANK.getItemStack());
-        addRecipe(Upgrade.AUTO_CRAFTER, "PPP", "CTC", "CUC", 'P', PLANKS, 'C', COBBLE, 'T', Blocks.piston, 'U', Upgrade.BLANK.getItemStack());
+        addRecipe(Upgrade.STORAGE, "C", "U", 'C', Blocks.CHEST, 'U', Upgrade.BLANK.getItemStack());
+        addRecipe(Upgrade.AUTO_CRAFTER, "PPP", "CTC", "CUC", 'P', PLANKS, 'C', COBBLE, 'T', Blocks.PISTON, 'U', Upgrade.BLANK.getItemStack());
         addRecipe(Upgrade.CHARGED, "IRI", "IUI", "IRI", 'I', IRON, 'R', REDSTONE, 'U', Upgrade.BLANK.getItemStack());
         addRecipe(Upgrade.SPEED, "IRI", "LUL", "IRI", 'I', IRON, 'R', REDSTONE, 'L', LAPIS, 'U', Upgrade.BLANK.getItemStack());
         addRecipe(Upgrade.QUEUE, "PPP", "IUI", "PPP", 'I', IRON, 'P', PLANKS, 'U', Upgrade.BLANK.getItemStack());
-        addRecipe(Upgrade.LAVA, "NFN", "NUN", "NNN", 'N', Blocks.netherrack, 'F', Blocks.furnace, 'U', Upgrade.BLANK.getItemStack());
+        addRecipe(Upgrade.LAVA, "NFN", "NUN", "NNN", 'N', Blocks.NETHERRACK, 'F', Blocks.FURNACE, 'U', Upgrade.BLANK.getItemStack());
         addRecipe(Upgrade.SOLAR, "ICI", "IGI", "IUI", 'I', IRON, 'G', GLOW_STONE, 'C', GLASS, 'U', Upgrade.BLANK.getItemStack());
-        addRecipe(Upgrade.EFFICIENCY, "III", "FPF", "RUR", 'I', IRON, 'R', REDSTONE, 'F', Blocks.furnace, 'P', Blocks.piston, 'U', Upgrade.BLANK.getItemStack());
-        addRecipe(Upgrade.AUTO_TRANSFER, "GGG", "HUH", "GGG", 'G', GOLD, 'H', Blocks.hopper, 'U', Upgrade.BLANK.getItemStack());
-        addRecipe(Upgrade.FILTER, "III", "GBG", "IUI", 'G', Blocks.light_weighted_pressure_plate, 'I', IRON, 'B', Blocks.iron_bars, 'U', Upgrade.BLANK.getItemStack());
+        addRecipe(Upgrade.EFFICIENCY, "III", "FPF", "RUR", 'I', IRON, 'R', REDSTONE, 'F', Blocks.FURNACE, 'P', Blocks.PISTON, 'U', Upgrade.BLANK.getItemStack());
+        addRecipe(Upgrade.AUTO_TRANSFER, "GGG", "HUH", "GGG", 'G', GOLD, 'H', Blocks.HOPPER, 'U', Upgrade.BLANK.getItemStack());
+        addRecipe(Upgrade.FILTER, "III", "GBG", "IUI", 'G', Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, 'I', IRON, 'B', Blocks.IRON_BARS, 'U', Upgrade.BLANK.getItemStack());
         addRecipe(Upgrade.TRANSFER, "III", "GRG", "GUG", 'G', GOLD, 'I', IRON, 'R', REDSTONE_BLOCK, 'U', Upgrade.BLANK.getItemStack());
 
     }

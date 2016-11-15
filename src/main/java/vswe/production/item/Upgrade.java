@@ -1,15 +1,10 @@
 package vswe.production.item;
 
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -68,18 +63,18 @@ public enum Upgrade {
         return name;
     }
 
-    @SideOnly(Side.CLIENT)
-    private IIcon icon;
-
-    @SideOnly(Side.CLIENT)
-    public IIcon getIcon() {
-        return icon;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void registerIcon(IIconRegister register) {
-        icon = register.registerIcon("production:" + unlocalizedName);
-    }
+//    @SideOnly(Side.CLIENT)
+//    private IIcon icon;
+//
+//    @SideOnly(Side.CLIENT)
+//    public IIcon getIcon() {
+//        return icon;
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    public void registerIcon(IIconRegister register) {
+//        icon = register.registerIcon("production:" + unlocalizedName);
+//    }
 
 
     public ItemStack getItemStack() {
@@ -91,18 +86,18 @@ public enum Upgrade {
     }
 
     public void addInfo(List<String> info) {
-        info.add(EnumChatFormatting.GRAY + description);
+        info.add(TextFormatting.GRAY + description);
         if (GuiScreen.isShiftKeyDown()) {
             if (getMaxCount() == 1) {
-                info.add(EnumChatFormatting.YELLOW + "Doesn't stack well");
+                info.add(TextFormatting.YELLOW + "Doesn't stack well");
             }else if (getMaxCount() > 1) {
-                info.add(EnumChatFormatting.YELLOW + "Stacks well up to " + getMaxCount() + " items");
+                info.add(TextFormatting.YELLOW + "Stacks well up to " + getMaxCount() + " items");
             }else if(!isEnabled()) {
-                info.add(EnumChatFormatting.DARK_RED + "This item is disabled");
+                info.add(TextFormatting.DARK_RED + "This item is disabled");
             }
 
             for (ParentType validParent : validParents) {
-                info.add(EnumChatFormatting.GOLD + validParent.description);
+                info.add(TextFormatting.GOLD + validParent.description);
             }
         }
     }
@@ -129,13 +124,13 @@ public enum Upgrade {
         CRAFTING("Works with Crafting Tables") {
             @Override
             protected boolean isValidParent(ItemStack item) {
-                return item != null && Item.getItemFromBlock(Blocks.crafting_table).equals(item.getItem());
+                return item != null && Item.getItemFromBlock(Blocks.CRAFTING_TABLE).equals(item.getItem());
             }
         },
         SMELTING("Works with Furnaces") {
             @Override
             protected boolean isValidParent(ItemStack item) {
-                return item != null && Item.getItemFromBlock(Blocks.furnace).equals(item.getItem());
+                return item != null && Item.getItemFromBlock(Blocks.FURNACE).equals(item.getItem());
             }
         },
         GLOBAL("Upgrades the entire Production Table") {

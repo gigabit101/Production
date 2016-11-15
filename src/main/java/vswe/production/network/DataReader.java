@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
+import vswe.production.Utils;
 
 import java.io.IOException;
 
@@ -90,7 +91,7 @@ public class DataReader {
             }
 
             try {
-                return CompressedStreamTools.func_152457_a(bytes, new NBTSizeTracker(2097152L));
+                return Utils.readCompressed(bytes, new NBTSizeTracker(2097152L));
             }catch (IOException ex) {
                 return null;
             }

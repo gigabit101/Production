@@ -1,11 +1,10 @@
 package vswe.production.page.unit;
 
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 import vswe.production.StevesProduction;
 import vswe.production.gui.GuiBase;
@@ -67,31 +66,17 @@ public abstract class Unit {
         gui.drawRect(this.x + x, this.y + y + PROGRESS_OFFSET, ARROW_SRC_X, ARROW_SRC_Y + ARROW_HEIGHT, progress * ARROW_WIDTH / PRODUCTION_TIME, ARROW_HEIGHT);
         GL11.glDisable(GL11.GL_BLEND);
 
-        if ((StevesProduction.nei != null || charging) && gui.inBounds(this.x + x, this.y + y, ARROW_WIDTH, ARROW_HEIGHT, mX, mY)) {
-            if (!charging) {
-                gui.drawMouseOver("Recipes");
-            }else{
-                List<String> str = new ArrayList<String>();
-                str.add(EnumChatFormatting.GREEN + (chargeCount < max ? "Charging" : "Fully Charged"));
-                str.add("Charges: " + chargeCount + "/" + max);
-                str.add(EnumChatFormatting.GRAY + "Charges can be consumed to instantly produce an item");
+        if (charging) {
+            List<String> str = new ArrayList<String>();
+            str.add(TextFormatting.GREEN + (chargeCount < max ? "Charging" : "Fully Charged"));
+            str.add("Charges: " + chargeCount + "/" + max);
+            str.add(TextFormatting.GRAY + "Charges can be consumed to instantly produce an item");
 
-                if (StevesProduction.nei != null) {
-                    str.add("");
-                    str.add("Click for Recipes");
-                }
 
-                gui.drawMouseOver(str);
-            }
+            gui.drawMouseOver(str);
         }
     }
 
-    @SideOnly(Side.CLIENT)
-    public void onClick(GuiBase gui, int mX, int mY) {
-        if (StevesProduction.nei != null &&gui.inBounds(this.x + getArrowX(), this.y + getArrowY(), ARROW_WIDTH, ARROW_HEIGHT, mX, mY)) {
-            StevesProduction.nei.onArrowClick(this);
-        }
-    }
 
     protected abstract int getArrowX();
     protected abstract int getArrowY();
@@ -157,7 +142,7 @@ public abstract class Unit {
     }
 
     public void onUpdate() {
-        if (!table.getWorldObj().isRemote) {
+        if (!table.getWorld().isRemote) {
             boolean canCharge = false;
             boolean updatedProgress = false;
             boolean canReset = false;

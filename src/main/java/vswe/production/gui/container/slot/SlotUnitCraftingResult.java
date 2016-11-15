@@ -1,13 +1,11 @@
 package vswe.production.gui.container.slot;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import vswe.production.item.Upgrade;
 import vswe.production.page.Page;
 import vswe.production.page.unit.UnitCrafting;
 import vswe.production.tileentity.TileEntityTable;
-
 
 public class SlotUnitCraftingResult extends SlotUnit {
     public SlotUnitCraftingResult(TileEntityTable table, Page page, int id, int x, int y, UnitCrafting unit) {

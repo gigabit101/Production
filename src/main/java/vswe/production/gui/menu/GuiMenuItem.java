@@ -167,7 +167,7 @@ public class GuiMenuItem extends GuiMenu {
 
 
             List<ItemStack> itemStacks = new ArrayList<ItemStack>();
-            for (Object obj : Item.itemRegistry) {
+            for (Object obj : Item.REGISTRY) {
                 Item item = (Item)obj;
 
                 if (item != null && item.getCreativeTab() != null) {

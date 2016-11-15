@@ -1,8 +1,6 @@
 package vswe.production.block;
 
-
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import vswe.production.creativetab.CreativeTabProduction;
 import vswe.production.item.Upgrade;
@@ -21,7 +19,6 @@ public final class ModBlocks {
         table = new BlockTable();
         GameRegistry.registerBlock(table, UNLOCALIZED_NAME);
         GameRegistry.registerTileEntity(TileEntityTable.class, UNLOCALIZED_NAME);
-        LanguageRegistry.addName(table, LOCALIZED_NAME);
 
         CreativeTabProduction.getTab().init(table);
 

@@ -5,7 +5,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import vswe.production.StevesProduction;
 
-
 public class CreativeTabProduction extends CreativeTabs {
     private Item item;
 

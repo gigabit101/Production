@@ -90,7 +90,7 @@ public class UnitSmelting extends Unit {
     @Override
     protected ItemStack getProductionResult() {
         ItemStack input = table.getStackInSlot(inputId);
-        return input == null ? null : FurnaceRecipes.smelting().getSmeltingResult(input);
+        return input == null ? null : FurnaceRecipes.instance().getSmeltingResult(input);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class UnitSmelting extends Unit {
     public boolean isEnabled() {
         ItemStack item = table.getUpgradePage().getUpgradeMainItem(id);
 
-        return item != null && Item.getItemFromBlock(Blocks.furnace) == item.getItem();
+        return item != null && Item.getItemFromBlock(Blocks.FURNACE) == item.getItem();
     }
 
 

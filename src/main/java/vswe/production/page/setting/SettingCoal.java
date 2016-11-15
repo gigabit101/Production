@@ -1,23 +1,19 @@
 package vswe.production.page.setting;
 
-import cpw.mods.fml.relauncher.*;
-import cpw.mods.fml.relauncher.Side;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import vswe.production.gui.GuiBase;
 import vswe.production.gui.container.slot.SlotBase;
 import vswe.production.tileentity.TileEntityTable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class SettingCoal extends Setting {
     private ItemStack itemStack;
 
     public SettingCoal(TileEntityTable table, int id, int x, int y) {
         super(table, id, x, y);
-        itemStack = new ItemStack(Items.coal);
+        itemStack = new ItemStack(Items.COAL);
     }
 
     @Override

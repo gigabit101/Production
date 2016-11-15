@@ -93,7 +93,7 @@ public class PageMain extends Page {
     public void onClick(GuiBase gui, int mX, int mY, int button) {
         for (Unit unit : units) {
             if (unit.isEnabled()) {
-                unit.onClick(gui, mX, mY);
+//                unit.onClick(gui, mX, mY);
             }
         }
     }

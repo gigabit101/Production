@@ -1,11 +1,9 @@
 package vswe.production.gui;
 
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
-import vswe.production.StevesProduction;
 import vswe.production.gui.container.ContainerTable;
 import vswe.production.gui.container.slot.SlotBase;
 import vswe.production.item.Upgrade;
@@ -15,9 +13,9 @@ import vswe.production.page.Page;
 import vswe.production.tileentity.TileEntityTable;
 import vswe.production.network.data.DataType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class GuiTable extends GuiBase {
 
@@ -61,38 +59,75 @@ public class GuiTable extends GuiBase {
     }
 
     @Override
-    protected void mouseClicked(int mX, int mY, int button) {
-        super.mouseClicked(mX, mY, button);
-        mX -= guiLeft;
-        mY -= guiTop;
+    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick)
+    {
+        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+        mouseX -= guiLeft;
+        mouseY -= guiTop;
+
 
         if (table.getMenu() == null) {
-            clickPageHeader(mX, mY);
-            table.getSelectedPage().onClick(this, mX, mY, button);
+            table.getSelectedPage().onRelease(this, mouseX, mouseY, clickedMouseButton);
         }else{
-            table.getMenu().onClick(this, mX, mY);
+            table.getMenu().onRelease(this, mouseX, mouseY);
         }
     }
 
     @Override
-    protected void mouseMovedOrUp(int mX, int mY, int button) {
-        super.mouseMovedOrUp(mX, mY, button);
-        mX -= guiLeft;
-        mY -= guiTop;
-
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+        mouseX -= guiLeft;
+        mouseY -= guiTop;
 
         if (table.getMenu() == null) {
-            table.getSelectedPage().onRelease(this, mX, mY, button);
+            clickPageHeader(mouseX, mouseY);
+            table.getSelectedPage().onClick(this, mouseX, mouseY, mouseButton);
         }else{
-            table.getMenu().onRelease(this, mX, mY);
+            table.getMenu().onClick(this, mouseX, mouseY);
         }
-
     }
+
+    //    @Override
+//    protected void mouseClicked(int mX, int mY, int button) {
+//        super.mouseClicked(mX, mY, button);
+//        mX -= guiLeft;
+//        mY -= guiTop;
+//
+//        if (table.getMenu() == null) {
+//            clickPageHeader(mX, mY);
+//            table.getSelectedPage().onClick(this, mX, mY, button);
+//        }else{
+//            table.getMenu().onClick(this, mX, mY);
+//        }
+//    }
+
+
+//    @Override
+//    protected void mouseMovedOrUp(int mX, int mY, int button) {
+//        super.mouseMovedOrUp(mX, mY, button);
+//        mX -= guiLeft;
+//        mY -= guiTop;
+//
+//
+//        if (table.getMenu() == null) {
+//            table.getSelectedPage().onRelease(this, mX, mY, button);
+//        }else{
+//            table.getMenu().onRelease(this, mX, mY);
+//        }
+//
+//    }
 
     @Override
     protected void keyTyped(char c, int k) {
         if (table.getMenu() == null) {
-            super.keyTyped(c, k);
+            try
+            {
+                super.keyTyped(c, k);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }else{
             if (k == 1) {
                 this.mc.thePlayer.closeScreen();
@@ -202,10 +237,10 @@ public class GuiTable extends GuiBase {
         if (hover) {
             String str = "Power: " + formatNumber(table.getPower()) + "/" + formatNumber(TileEntityTable.MAX_POWER);
             if (table.getLava() > 0 && table.getUpgradePage().hasGlobalUpgrade(Upgrade.LAVA)) {
-                str += "\n" + EnumChatFormatting.GOLD + "Lava: " + formatNumber(table.getLava()) + "/" + formatNumber(TileEntityTable.MAX_LAVA);
+                str += "\n" + TextFormatting.GOLD + "Lava: " + formatNumber(table.getLava()) + "/" + formatNumber(TileEntityTable.MAX_LAVA);
             }
             if (table.getUpgradePage().hasGlobalUpgrade(Upgrade.SOLAR)) {
-                str += "\n" + EnumChatFormatting.YELLOW + "Solar panel: " + (table.isLitAndCanSeeTheSky() ? "Lit" : EnumChatFormatting.GRAY + "Dark");
+                str += "\n" + TextFormatting.YELLOW + "Solar panel: " + (table.isLitAndCanSeeTheSky() ? "Lit" : TextFormatting.GRAY + "Dark");
             }
             drawMouseOver(str);
         }

@@ -1,6 +1,5 @@
 package vswe.production.config;
 
-
 import net.minecraftforge.common.config.Configuration;
 import vswe.production.item.Upgrade;
 

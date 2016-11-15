@@ -1,16 +1,16 @@
 package vswe.production.network;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import vswe.production.gui.container.ContainerTable;
 import vswe.production.tileentity.TileEntityTable;
 
@@ -25,11 +25,11 @@ public class PacketHandler {
 
     @SubscribeEvent
     public void onServerPacket(FMLNetworkEvent.ServerCustomPacketEvent event) {
-        onPacket(event, ((NetHandlerPlayServer)event.handler).playerEntity, true);
+        onPacket(event, ((NetHandlerPlayServer)event.getHandler()).playerEntity, true);
     }
 
     private void onPacket(FMLNetworkEvent.CustomPacketEvent event, EntityPlayer player, boolean onServer) {
-        DataReader dr = new DataReader(event.packet.payload());
+        DataReader dr = new DataReader(event.getPacket().payload());
         PacketId id = dr.readEnum(PacketId.class);
         TileEntityTable table = null;
 
@@ -42,7 +42,7 @@ public class PacketHandler {
             int y = dr.readSignedInteger();
             int z = dr.readSignedInteger();
             World world = player.worldObj;
-            TileEntity te = world.getTileEntity(x, y, z);
+            TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
             if (te instanceof TileEntityTable) {
                 table = (TileEntityTable)te;
             }
@@ -61,9 +61,9 @@ public class PacketHandler {
         DataWriter dw = new DataWriter();
         dw.writeEnum(id);
         if (!id.isInInterface()) {
-            dw.writeInteger(table.xCoord);
-            dw.writeInteger(table.yCoord);
-            dw.writeInteger(table.zCoord);
+            dw.writeInteger(table.getPos().getX());
+            dw.writeInteger(table.getPos().getY());
+            dw.writeInteger(table.getPos().getZ());
         }
         return dw;
     }

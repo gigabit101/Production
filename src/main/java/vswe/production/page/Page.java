@@ -1,7 +1,7 @@
 package vswe.production.page;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import vswe.production.gui.GuiBase;
 import vswe.production.gui.GuiTable;
 import vswe.production.gui.container.slot.SlotBase;

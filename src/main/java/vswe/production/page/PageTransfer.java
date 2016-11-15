@@ -1,10 +1,9 @@
 package vswe.production.page;
 
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import vswe.production.block.ModBlocks;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import vswe.production.gui.component.ArrowScroll;
 import vswe.production.gui.component.CheckBox;
 import vswe.production.gui.GuiBase;
@@ -24,7 +23,6 @@ import vswe.production.network.data.DataType;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class PageTransfer extends Page {
     private List<Setting> settings;
@@ -268,7 +266,7 @@ public class PageTransfer extends Page {
 
 
                 gui.drawRect(side.getX(), side.getY(), SIDE_SRC_X + textureIndexX * SIDE_SIZE, SIDE_SRC_Y + textureIndexY * SIDE_SIZE, SIDE_SIZE, SIDE_SIZE);
-                gui.drawBlockIcon(ModBlocks.table.getIconFromSideAndMeta(side.getDirection().ordinal(), 0), side.getX() + SIDE_ITEM_OFFSET, side.getY() + SIDE_ITEM_OFFSET);
+//                gui.drawBlockIcon(ModBlocks.table.getIconFromSideAndMeta(side.getDirection().ordinal(), 0), side.getX() + SIDE_ITEM_OFFSET, side.getY() + SIDE_ITEM_OFFSET);
 
                 if (hover) {
                     gui.drawMouseOver(side.getDescription(side == selectedSide));
@@ -395,7 +393,7 @@ public class PageTransfer extends Page {
 
     }
 
-    @SideOnly(cpw.mods.fml.relauncher.Side.CLIENT)
+    @SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
     private EntityPlayer getPlayer() {
         return Minecraft.getMinecraft().thePlayer;
     }

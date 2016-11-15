@@ -1,6 +1,6 @@
 package vswe.production.page.setting;
 
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import vswe.production.item.Upgrade;
 
 import java.util.ArrayList;
@@ -70,35 +70,35 @@ public class Side {
 
         String description = direction.getDescription();
         if (description != null) {
-            str.add(EnumChatFormatting.GRAY + description);
+            str.add(TextFormatting.GRAY + description);
         }
         if (selected) {
-            str.add(EnumChatFormatting.YELLOW + "Selected");
+            str.add(TextFormatting.YELLOW + "Selected");
         }
 
         str.add("");
-        addTransferInfo(str, input, EnumChatFormatting.BLUE);
-        addTransferInfo(str, output, EnumChatFormatting.RED);
+        addTransferInfo(str, input, TextFormatting.BLUE);
+        addTransferInfo(str, output, TextFormatting.RED);
 
         return str;
     }
 
-    private void addTransferInfo(List<String> lst, Transfer transfer, EnumChatFormatting color) {
+    private void addTransferInfo(List<String> lst, Transfer transfer, TextFormatting color) {
         String name = transfer.isInput() ? "Input" : "Output";
         if (transfer.isEnabled()) {
             lst.add(color + name + ": Enabled");
             if (transfer.isAuto() && setting.table.getUpgradePage().hasGlobalUpgrade(Upgrade.AUTO_TRANSFER)) {
-                lst.add(EnumChatFormatting.GRAY + name + " Transfer: " + EnumChatFormatting.GREEN + "Auto");
+                lst.add(TextFormatting.GRAY + name + " Transfer: " + TextFormatting.GREEN + "Auto");
             }
             if (transfer.hasFilter(setting.table)) {
                 if (transfer.hasWhiteList()) {
-                    lst.add(EnumChatFormatting.GRAY + name + " Filter: " + EnumChatFormatting.WHITE + "White list");
+                    lst.add(TextFormatting.GRAY + name + " Filter: " + TextFormatting.WHITE + "White list");
                 }else{
-                    lst.add(EnumChatFormatting.GRAY + name + " Filter: " + EnumChatFormatting.DARK_GRAY + "Black list");
+                    lst.add(TextFormatting.GRAY + name + " Filter: " + TextFormatting.DARK_GRAY + "Black list");
                 }
             }
         }else{
-            lst.add(EnumChatFormatting.GRAY + name + ": Disabled");
+            lst.add(TextFormatting.GRAY + name + ": Disabled");
         }
     }
 }

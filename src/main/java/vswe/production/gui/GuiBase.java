@@ -4,11 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -33,7 +30,7 @@ public abstract class GuiBase extends GuiContainer {
         shiftMoveRendered = false;
         for (Object obj : inventorySlots.inventorySlots) {
             SlotBase slot = (SlotBase)obj;
-            if (func_146978_c(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, x, y)) {
+            if (inBounds(slot.xDisplayPosition, slot.yDisplayPosition, 16, 16, x, y)) {
                 selectedSlot = slot;
                 break;
             }
@@ -85,7 +82,7 @@ public abstract class GuiBase extends GuiContainer {
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
         GL11.glEnable(GL11.GL_LIGHTING);
-        itemRender.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), item, x, y);
+        itemRender.renderItemAndEffectIntoGUI(item, x, y);//UI(null, mc.getTextureManager(), item, x, y);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
     }
@@ -93,30 +90,30 @@ public abstract class GuiBase extends GuiContainer {
     private static final ResourceLocation BLOCK_TEXTURE = new ResourceLocation("textures/atlas/blocks.png");
 
 
-    public void drawBlockIcon(IIcon icon, int x, int y) {
-        mc.getTextureManager().bindTexture(BLOCK_TEXTURE);
-        drawIcon(icon, x, y);
-    }
-
-    public void drawIcon(IIcon icon, int x, int y) {
-        drawIcon(icon, x, y, 1F, 1F, 0F, 0F);
-    }
-
-    public void drawIcon(IIcon icon, int targetX, int targetY, float sizeX, float sizeY, float offsetX, float offsetY) {
-        Tessellator tessellator = Tessellator.instance;
-        tessellator.startDrawingQuads();
-
-        float x = icon.getMinU() + offsetX * (icon.getMaxU() - icon.getMinU());
-        float y = icon.getMinV() + offsetY * (icon.getMaxV() - icon.getMinV());
-        float width = (icon.getMaxU() - icon.getMinU()) * sizeX;
-        float height = (icon.getMaxV() - icon.getMinV()) * sizeY;
-
-        tessellator.addVertexWithUV(targetX, 			    targetY + 16 * sizeY, 	this.zLevel, 	x, 			    y + height);
-        tessellator.addVertexWithUV(targetX + 16 * sizeX, 	targetY + 16 * sizeY, 	this.zLevel, 	x + width, 		y + height);
-        tessellator.addVertexWithUV(targetX + 16 * sizeX, 	targetY, 			    this.zLevel, 	x + width, 		y);
-        tessellator.addVertexWithUV(targetX, 			    targetY, 			    this.zLevel, 	x, 			    y);
-        tessellator.draw();
-    }
+//    public void drawBlockIcon(IIcon icon, int x, int y) {
+//        mc.getTextureManager().bindTexture(BLOCK_TEXTURE);
+//        drawIcon(icon, x, y);
+//    }
+//
+//    public void drawIcon(IIcon icon, int x, int y) {
+//        drawIcon(icon, x, y, 1F, 1F, 0F, 0F);
+//    }
+//
+//    public void drawIcon(IIcon icon, int targetX, int targetY, float sizeX, float sizeY, float offsetX, float offsetY) {
+//        Tessellator tessellator = Tessellator.instance;
+//        tessellator.startDrawingQuads();
+//
+//        float x = icon.getMinU() + offsetX * (icon.getMaxU() - icon.getMinU());
+//        float y = icon.getMinV() + offsetY * (icon.getMaxV() - icon.getMinV());
+//        float width = (icon.getMaxU() - icon.getMinU()) * sizeX;
+//        float height = (icon.getMaxV() - icon.getMinV()) * sizeY;
+//
+//        tessellator.addVertexWithUV(targetX, 			    targetY + 16 * sizeY, 	this.zLevel, 	x, 			    y + height);
+//        tessellator.addVertexWithUV(targetX + 16 * sizeX, 	targetY + 16 * sizeY, 	this.zLevel, 	x + width, 		y + height);
+//        tessellator.addVertexWithUV(targetX + 16 * sizeX, 	targetY, 			    this.zLevel, 	x + width, 		y);
+//        tessellator.addVertexWithUV(targetX, 			    targetY, 			    this.zLevel, 	x, 			    y);
+//        tessellator.draw();
+//    }
 
     private static final int ITEM_SIZE = 18;
     private static final int ITEM_SRC_X = 68;

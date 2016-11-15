@@ -9,7 +9,6 @@ import vswe.production.item.Upgrade;
 import vswe.production.page.Page;
 import vswe.production.tileentity.TileEntityTable;
 
-
 public class SlotUpgrade extends SlotTable {
     private SlotUpgrade main;
     private boolean isMain;
@@ -50,7 +49,7 @@ public class SlotUpgrade extends SlotTable {
     }
 
     private boolean isMainItem(ItemStack itemstack) {
-        return itemstack.getItem().equals(Item.getItemFromBlock(Blocks.crafting_table)) || itemstack.getItem().equals(Item.getItemFromBlock(Blocks.furnace));
+        return itemstack.getItem().equals(Item.getItemFromBlock(Blocks.CRAFTING_TABLE)) || itemstack.getItem().equals(Item.getItemFromBlock(Blocks.FURNACE));
     }
 
     @Override

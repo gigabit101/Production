@@ -1,28 +1,32 @@
 package vswe.production.network;
 
-
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import vswe.production.Utils;
 
 import static vswe.production.StevesProduction.CHANNEL;
 import static vswe.production.StevesProduction.packetHandler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class DataWriter {
-    private ByteBuf stream;
+    private OutputStream stream;
     private int byteBuffer;
     private int bitCountBuffer;
 
-    DataWriter() {
-        stream = Unpooled.buffer();
+    DataWriter()
+    {
+        stream = new ByteArrayOutputStream();
     }
 
     public void writeData(int data, IBitCount bitCount) {
@@ -30,23 +34,35 @@ public class DataWriter {
     }
 
 
-    private void writeData(int data, int bitCount) {
-        long mask = (long)Math.pow(2, bitCount) - 1;
+    public void writeData(int data, int bitCount)
+    {
+        long mask = (long) Math.pow(2, bitCount) - 1;
+
         data &= mask;
 
-        while (true) {
-            if (bitCountBuffer + bitCount >= 8) {
+        while (true)
+        {
+            if (bitCountBuffer + bitCount >= 8)
+            {
                 int bitsToAdd = 8 - bitCountBuffer;
-                int addMask = (int)Math.pow(2, bitsToAdd) - 1;
+                int addMask = (int) Math.pow(2, bitsToAdd) - 1;
                 int addData = data & addMask;
                 data >>>= bitsToAdd;
                 addData <<= bitCountBuffer;
                 byteBuffer |= addData;
-                stream.writeByte(byteBuffer);
+
+                try
+                {
+                    stream.write(byteBuffer);
+                } catch (IOException ignored)
+                {
+                }
+
                 byteBuffer = 0;
                 bitCount -= bitsToAdd;
                 bitCountBuffer = 0;
-            }else{
+            } else
+            {
                 byteBuffer |= data << bitCountBuffer;
                 bitCountBuffer += bitCount;
                 break;
@@ -71,37 +87,51 @@ public class DataWriter {
         }
     }
 
-    public void writeNBT(NBTTagCompound nbtTagCompound){
+    public void writeNBT(NBTTagCompound nbtTagCompound)
+    {
         byte[] bytes = null;
 
-        if (nbtTagCompound != null) {
-            try {
-                bytes = CompressedStreamTools.compress(nbtTagCompound);
-            }catch (IOException ex) {
+        if (nbtTagCompound != null)
+        {
+            try
+            {
+                bytes = Utils.compress(nbtTagCompound);
+            } catch (IOException ex)
+            {
                 bytes = null;
             }
         }
 
         writeBoolean(bytes != null);
-        if (bytes != null) {
-            writeData(bytes.length, StandardCounts.NBT_LENGTH);
-            for (byte b : bytes) {
+        if (bytes != null)
+        {
+            writeData(bytes.length, 15);
+            for (byte b : bytes)
+            {
                 writeByte(b);
             }
         }
     }
 
-    void writeFinalBits() {
-        if (bitCountBuffer > 0) {
-            stream.writeByte(byteBuffer);
-            bitCountBuffer = 0;
+    void writeFinalBits()
+    {
+        if (bitCountBuffer > 0)
+        {
+            try
+            {
+                stream.write(byteBuffer);
+                bitCountBuffer = 0;
+            } catch (IOException ignored)
+            {
+            }
         }
-
     }
 
-    private FMLProxyPacket createPacket() {
+    private FMLProxyPacket createPacket()
+    {
         writeFinalBits();
-        return new FMLProxyPacket(stream, CHANNEL);
+        PacketBuffer buf = new PacketBuffer(Unpooled.copiedBuffer(((ByteArrayOutputStream) stream).toByteArray()));
+        return new FMLProxyPacket(buf, CHANNEL);
     }
 
 
@@ -120,11 +150,11 @@ public class DataWriter {
     }
 
     void sendToAllPlayersAround(TileEntity te, double range) {
-        sendToAllPlayersAround(te.getWorldObj(), te.xCoord, te.yCoord, te.zCoord, range);
+        sendToAllPlayersAround(te.getWorld(), te.getPos().getX(), te.getPos().getY(), te.getPos().getZ(), range);
     }
 
     void sendToAllPlayersAround(World world, int x, int y, int z, double range) {
-        packetHandler.sendToAllAround(createPacket(), new NetworkRegistry.TargetPoint(world.provider.dimensionId, x + 0.5,y + 0.5, z, range));
+        packetHandler.sendToAllAround(createPacket(), new NetworkRegistry.TargetPoint(world.provider.getDimension(), x + 0.5,y + 0.5, z, range));
     }
 
 
